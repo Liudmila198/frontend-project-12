@@ -30,7 +30,7 @@ const resources = {
       'signup.submit': 'Зарегистрироваться',
       'signup.alreadyHaveAccount': 'Уже есть аккаунт?',
       'signup.loginLink': 'Войти',
-      'signup.errorExists': 'Пользователь с таким именем уже существует',
+      'signup.errorExists': 'Такой пользователь уже существует',
 
       'validation.required': 'Обязательное поле',
       'validation.usernameLength': 'От 3 до 20 символов',
