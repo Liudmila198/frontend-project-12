@@ -192,8 +192,8 @@ const ChatPage = () => {
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                         onClick={(e) => e.stopPropagation()}
-                        aria-label={t('channel.actions')}
                       >
+                        <span className="visually-hidden">{t('channel.actions')}</span>
                         ⋮
                       </button>
                       <ul className="dropdown-menu" aria-labelledby={`channel-menu-${channel.id}`}>
