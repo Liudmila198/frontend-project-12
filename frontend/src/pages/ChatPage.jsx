@@ -249,7 +249,7 @@ const ChatPage = () => {
                       className="form-control me-2"
                       placeholder={t('chat.typeMessage')}
                       disabled={sending}
-                      aria-label="Новое сообщение" // добавлено для прохождения теста
+                      aria-label="Новое сообщение"
                     />
                     <button
                       type="submit"
@@ -299,6 +299,7 @@ const ChatPage = () => {
               <Modal.Body>
                 <div className="form-floating">
                   <input
+                    id="channel-name-input"
                     name="name"
                     className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
                     placeholder={t('channel.name')}
@@ -306,7 +307,7 @@ const ChatPage = () => {
                     onChange={handleChange}
                     autoFocus
                   />
-                  <label>{t('channel.name')}</label>
+                  <label htmlFor="channel-name-input">{t('channel.name')}</label>
                   {touched.name && errors.name && (
                     <div className="invalid-feedback">{errors.name}</div>
                   )}
@@ -359,6 +360,7 @@ const ChatPage = () => {
                 <Modal.Body>
                   <div className="form-floating">
                     <input
+                      id="rename-channel-input"
                       name="name"
                       className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
                       placeholder={t('channel.name')}
@@ -366,7 +368,7 @@ const ChatPage = () => {
                       onChange={handleChange}
                       autoFocus
                     />
-                    <label>{t('channel.name')}</label>
+                    <label htmlFor="rename-channel-input">{t('channel.name')}</label>
                     {touched.name && errors.name && (
                       <div className="invalid-feedback">{errors.name}</div>
                     )}
