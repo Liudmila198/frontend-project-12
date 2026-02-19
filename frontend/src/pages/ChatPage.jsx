@@ -38,13 +38,11 @@ const ChatPage = () => {
   } = useSelector((state) => state.chat);
   const token = useSelector((state) => state.auth.token);
 
-  // Состояния для модальных окон
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [showRenameChannel, setShowRenameChannel] = useState(false);
   const [showRemoveChannel, setShowRemoveChannel] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(null);
 
-  // Подключение к сокетам
   useEffect(() => {
     if (!token) {
       navigate('/login');
@@ -52,17 +50,29 @@ const ChatPage = () => {
     }
 
     const socket = socketManager.connect(token);
-    socket.on('newMessage', (message) => dispatch(addMessage(message)));
-    socket.on('newChannel', (channel) => dispatch(addChannel(channel)));
-    socket.on('removeChannel', (channel) => dispatch(removeChannelAction(channel.id)));
-    socket.on('renameChannel', (channel) => dispatch(renameChannelAction(channel)));
+
+    socket.on('newMessage', (message) => {
+      console.log('New message via socket:', message);
+      dispatch(addMessage(message));
+    });
+
+    socket.on('newChannel', (channel) => {
+      dispatch(addChannel(channel));
+    });
+
+    socket.on('removeChannel', (channel) => {
+      dispatch(removeChannelAction(channel.id));
+    });
+
+    socket.on('renameChannel', (channel) => {
+      dispatch(renameChannelAction(channel));
+    });
 
     return () => {
       socketManager.disconnect();
     };
   }, [token, dispatch, navigate]);
 
-  // Загрузка начальных данных
   useEffect(() => {
     if (!token) return;
     if (channels.length === 0) {
@@ -70,7 +80,6 @@ const ChatPage = () => {
     }
   }, [dispatch, token, channels.length]);
 
-  // Обработка ошибок (например, 401)
   useEffect(() => {
     if (error && error.status === 401) {
       dispatch(logout());
@@ -89,12 +98,17 @@ const ChatPage = () => {
   );
 
   const handleSubmitMessage = async (values, { resetForm }) => {
+    if (!currentChannelId) {
+      console.error('No channel selected');
+      return;
+    }
     try {
       await dispatch(
         sendMessage({ text: values.message, channelId: currentChannelId })
       ).unwrap();
       resetForm();
     } catch (err) {
+      console.error('Error sending message:', err);
       toast.error(t('toast.messageError'));
     }
   };
@@ -235,6 +249,7 @@ const ChatPage = () => {
                       className="form-control me-2"
                       placeholder={t('chat.typeMessage')}
                       disabled={sending}
+                      aria-label="Новое сообщение" // добавлено для прохождения теста
                     />
                     <button
                       type="submit"

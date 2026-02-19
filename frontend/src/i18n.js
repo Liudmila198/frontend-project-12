@@ -41,6 +41,7 @@ const resources = {
 
       'chat.channels': 'Каналы',
       'chat.messages': 'Сообщения',
+      'chat.messageAriaLabel': 'Новое сообщение',
       'chat.typeMessage': 'Введите сообщение...',
       'chat.addChannel': 'Добавить канал',
       'channel.actions': 'Управление каналом',
