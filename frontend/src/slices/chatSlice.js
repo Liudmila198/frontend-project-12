@@ -24,11 +24,12 @@ export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
   async ({ text, channelId }, { rejectWithValue }) => {
     try {
-      // Временно отключаем фильтрацию для прохождения тестов
-      // const cleanText = filterProfanity(text)
+      console.log('Sending message:', { text, channelId })
       const response = await api.post('/api/v1/messages', { text, channelId })
+      console.log('Message sent, response:', response.data)
       return response.data
     } catch (err) {
+      console.error('Send message error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -91,7 +92,6 @@ const chatSlice = createSlice({
     addMessage(state, action) {
       const message = action.payload
       if (!state.messages.some((m) => m.id === message.id)) {
-        // Временно отключаем фильтрацию для сообщений, получаемых через сокет
         state.messages.push(message)
       }
     },
@@ -131,10 +131,7 @@ const chatSlice = createSlice({
           ...c,
           name: filterProfanity(c.name),
         }))
-        state.messages = action.payload.messages.map((m) => ({
-          ...m,
-          text: filterProfanity(m.text),
-        }))
+        state.messages = action.payload.messages
         if (!state.currentChannelId && action.payload.channels.length > 0) {
           state.currentChannelId = action.payload.channels[0].id
         }
@@ -150,12 +147,12 @@ const chatSlice = createSlice({
         state.sending = false
         const message = action.payload
         if (!state.messages.some((m) => m.id === message.id)) {
-          // Временно отключаем фильтрацию для отправленных сообщений
           state.messages.push(message)
         }
       })
-      .addCase(sendMessage.rejected, (state) => {
+      .addCase(sendMessage.rejected, (state, action) => {
         state.sending = false
+        console.error('sendMessage rejected:', action.payload)
       })
       .addCase(createChannel.fulfilled, (state, action) => {
         const channel = action.payload
