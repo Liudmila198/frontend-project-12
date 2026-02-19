@@ -51,6 +51,14 @@ const ChatPage = () => {
 
     const socket = socketManager.connect(token);
 
+    socket.on('connect', () => {
+      console.log('Socket connected for user');
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+    });
+
     socket.on('newMessage', (message) => {
       console.log('New message via socket:', message);
       dispatch(addMessage(message));
