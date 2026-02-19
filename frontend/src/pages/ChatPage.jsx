@@ -117,6 +117,7 @@ const ChatPage = () => {
   const closeAddChannel = () => setShowAddChannel(false);
 
   const openRenameChannel = (channel) => {
+    console.log('openRenameChannel called for channel:', channel);
     setSelectedChannel(channel);
     setShowRenameChannel(true);
   };
@@ -191,6 +192,7 @@ const ChatPage = () => {
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                         onClick={(e) => e.stopPropagation()}
+                        aria-label={t('channel.actions')}
                       >
                         ⋮
                       </button>
@@ -200,6 +202,7 @@ const ChatPage = () => {
                             className="dropdown-item"
                             onClick={(e) => {
                               e.stopPropagation();
+                              console.log('Rename menu item clicked for channel:', channel);
                               openRenameChannel(channel);
                             }}
                           >
