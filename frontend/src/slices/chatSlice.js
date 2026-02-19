@@ -39,10 +39,14 @@ export const createChannel = createAsyncThunk(
   'chat/createChannel',
   async (name, { rejectWithValue }) => {
     try {
+      console.log('createChannel original name:', name)
       const cleanName = filterProfanity(name)
+      console.log('createChannel filtered name:', cleanName)
       const response = await api.post('/api/v1/channels', { name: cleanName })
+      console.log('createChannel response:', response.data)
       return response.data
     } catch (err) {
+      console.error('createChannel error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -97,11 +101,14 @@ const chatSlice = createSlice({
     },
     addChannel(state, action) {
       const channel = action.payload
+      console.log('addChannel received:', channel)
       if (!state.channels.some((c) => c.id === channel.id)) {
-        state.channels.push({
+        const filteredChannel = {
           ...channel,
           name: filterProfanity(channel.name),
-        })
+        }
+        console.log('addChannel filtered:', filteredChannel)
+        state.channels.push(filteredChannel)
       }
     },
     removeChannelAction(state, action) {
@@ -156,10 +163,13 @@ const chatSlice = createSlice({
       })
       .addCase(createChannel.fulfilled, (state, action) => {
         const channel = action.payload
-        state.channels.push({
+        console.log('createChannel.fulfilled, raw channel:', channel)
+        const filteredChannel = {
           ...channel,
           name: filterProfanity(channel.name),
-        })
+        }
+        console.log('createChannel.fulfilled filtered:', filteredChannel)
+        state.channels.push(filteredChannel)
         state.currentChannelId = channel.id
       })
       .addCase(renameChannel.fulfilled, (state, action) => {
