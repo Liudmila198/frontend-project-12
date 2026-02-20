@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx start-server",
+    "start": "npx start-server -s ./frontend/dist",
     "build": "cd frontend && npm run build",
     "dev": "cd frontend && npm run dev"
   },
