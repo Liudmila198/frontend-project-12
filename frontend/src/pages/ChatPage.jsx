@@ -66,30 +66,36 @@ const ChatPage = () => {
         'current channel:',
         currentChannelId,
       )
-      if (currentChannelId === message.channelId) {
-        console.log('Message for current channel')
-      } else {
-        console.log('Message for different channel')
+      // Если канал еще не выбран, выбираем канал полученного сообщения
+      if (currentChannelId === null) {
+        console.log(
+          'No channel selected, setting to message channel:',
+          message.channelId,
+        )
+        dispatch(setCurrentChannel(message.channelId))
       }
       dispatch(addMessage(message))
     })
 
     socket.on('newChannel', (channel) => {
+      console.log('New channel via socket:', channel)
       dispatch(addChannel(channel))
     })
 
     socket.on('removeChannel', (channel) => {
+      console.log('Remove channel via socket:', channel)
       dispatch(removeChannelAction(channel.id))
     })
 
     socket.on('renameChannel', (channel) => {
+      console.log('Rename channel via socket:', channel)
       dispatch(renameChannelAction(channel))
     })
 
     return () => {
       socketManager.disconnect()
     }
-  }, [token, dispatch, navigate, currentChannelId]) // добавили currentChannelId для логирования
+  }, [token, dispatch, navigate, currentChannelId])
 
   // Загрузка начальных данных
   useEffect(() => {
@@ -272,11 +278,14 @@ const ChatPage = () => {
           {/* Сообщения и форма отправки */}
           <div className="col-9 p-0 h-100 d-flex flex-column">
             <div className="flex-grow-1 overflow-auto p-3">
-              {filteredMessages.map((msg) => (
-                <div key={msg.id} className="mb-2">
-                  <b>{msg.username}</b>: {msg.text}
-                </div>
-              ))}
+              {filteredMessages.map((msg) => {
+                console.log('Rendering message:', msg)
+                return (
+                  <div key={msg.id} className="mb-2">
+                    <b>{msg.username}</b>: {msg.text}
+                  </div>
+                )
+              })}
             </div>
             <div className="p-3 border-top">
               <Formik
