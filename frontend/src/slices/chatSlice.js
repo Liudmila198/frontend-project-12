@@ -26,7 +26,8 @@ export const sendMessage = createAsyncThunk(
     try {
       console.log('Sending message:', { text, channelId })
       const response = await api.post('/api/v1/messages', { text, channelId })
-      console.log('Message sent, response:', response.data)
+      console.log('Message sent, response data:', response.data)
+      console.log('Message sent keys:', Object.keys(response.data))
       return response.data
     } catch (err) {
       console.error('Send message error:', err.response?.data)
@@ -104,7 +105,9 @@ const chatSlice = createSlice({
       const message = action.payload
       console.log(
         'addMessage called with message:',
-        message,
+        JSON.stringify(message),
+        'keys:',
+        Object.keys(message),
         'current messages count:',
         state.messages.length,
       )
@@ -184,7 +187,8 @@ const chatSlice = createSlice({
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.sending = false
         const message = action.payload
-        console.log('sendMessage.fulfilled, message:', message)
+        console.log('sendMessage.fulfilled, message:', JSON.stringify(message))
+        console.log('sendMessage.fulfilled keys:', Object.keys(message))
         if (!state.messages.some((m) => m.id === message.id)) {
           state.messages.push(message)
           console.log(
