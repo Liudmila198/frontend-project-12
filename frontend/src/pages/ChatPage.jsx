@@ -43,6 +43,12 @@ const ChatPage = () => {
   const [showRemoveChannel, setShowRemoveChannel] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(null);
 
+  // Логирование текущего канала при его изменении
+  useEffect(() => {
+    console.log('Current channel ID changed to:', currentChannelId);
+  }, [currentChannelId]);
+
+  // Подключение к сокетам
   useEffect(() => {
     if (!token) {
       navigate('/login');
@@ -60,7 +66,12 @@ const ChatPage = () => {
     });
 
     socket.on('newMessage', (message) => {
-      console.log('New message via socket:', message);
+      console.log('New message via socket:', message, 'current channel:', currentChannelId);
+      if (currentChannelId === message.channelId) {
+        console.log('Message for current channel');
+      } else {
+        console.log('Message for different channel');
+      }
       dispatch(addMessage(message));
     });
 
@@ -79,8 +90,9 @@ const ChatPage = () => {
     return () => {
       socketManager.disconnect();
     };
-  }, [token, dispatch, navigate]);
+  }, [token, dispatch, navigate, currentChannelId]); // добавили currentChannelId для логирования
 
+  // Загрузка начальных данных
   useEffect(() => {
     if (!token) return;
     if (channels.length === 0) {
@@ -88,6 +100,7 @@ const ChatPage = () => {
     }
   }, [dispatch, token, channels.length]);
 
+  // Обработка ошибок (например, 401)
   useEffect(() => {
     if (error && error.status === 401) {
       dispatch(logout());
@@ -104,6 +117,11 @@ const ChatPage = () => {
   const filteredMessages = messages.filter(
     (msg) => msg.channelId === currentChannelId
   );
+
+  // Логирование количества сообщений при рендере
+  useEffect(() => {
+    console.log('Rendering messages for channel', currentChannelId, 'count:', filteredMessages.length);
+  }, [filteredMessages, currentChannelId]);
 
   const handleSubmitMessage = async (values, { resetForm }) => {
     if (!currentChannelId) {
