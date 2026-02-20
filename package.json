@@ -22,6 +22,7 @@
   "homepage": "https://github.com/Liudmila198/frontend-project-12#readme",
   "dependencies": {
     "@hexlet/chat-server": "^1.1.0",
+    "fastify-static": "^4.6.1",
     "formik": "^2.4.9",
     "pug": "^3.0.3",
     "react-router-dom": "^7.11.0",
