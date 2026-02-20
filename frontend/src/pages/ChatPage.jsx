@@ -62,7 +62,7 @@ const ChatPage = () => {
     socket.on('newMessage', (message) => {
       console.log(
         'New message via socket:',
-        message,
+        JSON.stringify(message),
         'current channel:',
         currentChannelId,
       )
@@ -279,7 +279,7 @@ const ChatPage = () => {
           <div className="col-9 p-0 h-100 d-flex flex-column">
             <div className="flex-grow-1 overflow-auto p-3">
               {filteredMessages.map((msg) => {
-                console.log('Rendering message:', msg)
+                console.log('Rendering message:', JSON.stringify(msg))
                 return (
                   <div key={msg.id} className="mb-2">
                     <b>{msg.username}</b>: {msg.text}
