@@ -1,35 +1,33 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import axios from '../api/axios' // используем настроенный экземпляр
+import routes from '../routes'
 
 export const login = createAsyncThunk(
   'auth/login',
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/v1/login', {
+      const response = await axios.post(routes.loginPath(), {
         username,
         password,
       })
-      return response.data
+      return response.data // ожидается { token, username }
     } catch (err) {
-      return rejectWithValue(err.response?.data || 'Ошибка авторизации')
+      return rejectWithValue(err.response?.data)
     }
   },
 )
 
-export const register = createAsyncThunk(
-  'auth/register',
+export const signup = createAsyncThunk(
+  'auth/signup',
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/v1/signup', {
+      const response = await axios.post(routes.signupPath(), {
         username,
         password,
       })
-      return response.data
+      return response.data // ожидается { token, username }
     } catch (err) {
-      return rejectWithValue({
-        status: err.response?.status,
-        data: err.response?.data,
-      })
+      return rejectWithValue(err.response?.data)
     }
   },
 )
@@ -38,52 +36,54 @@ const authSlice = createSlice({
   name: 'auth',
   initialState: {
     token: localStorage.getItem('token') || null,
-    loginError: null,
-    registerError: null,
+    username: localStorage.getItem('username') || null,
     loading: false,
+    error: null,
   },
   reducers: {
     logout: (state) => {
       state.token = null
+      state.username = null
       localStorage.removeItem('token')
-    },
-    clearLoginError: (state) => {
-      state.loginError = null
-    },
-    clearRegisterError: (state) => {
-      state.registerError = null
+      localStorage.removeItem('username')
     },
   },
   extraReducers: (builder) => {
     builder
+      // login
       .addCase(login.pending, (state) => {
         state.loading = true
-        state.loginError = null
+        state.error = null
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false
         state.token = action.payload.token
+        state.username = action.payload.username
         localStorage.setItem('token', action.payload.token)
+        localStorage.setItem('username', action.payload.username)
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false
-        state.loginError = action.payload || 'Неизвестная ошибка'
+        state.error = action.payload
       })
-      .addCase(register.pending, (state) => {
+      // signup
+      .addCase(signup.pending, (state) => {
         state.loading = true
-        state.registerError = null
+        state.error = null
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(signup.fulfilled, (state, action) => {
         state.loading = false
         state.token = action.payload.token
+        state.username = action.payload.username
         localStorage.setItem('token', action.payload.token)
+        localStorage.setItem('username', action.payload.username)
       })
-      .addCase(register.rejected, (state, action) => {
+      .addCase(signup.rejected, (state, action) => {
         state.loading = false
-        state.registerError = action.payload
+        state.error = action.payload
       })
   },
 })
 
-export const { logout, clearLoginError, clearRegisterError } = authSlice.actions
+export const { logout } = authSlice.actions
 export default authSlice.reducer
