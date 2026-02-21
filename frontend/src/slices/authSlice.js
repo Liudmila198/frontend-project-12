@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from '../api/axios' // используем настроенный экземпляр
+import axios from '../api/axios'
 import routes from '../routes'
 
 export const login = createAsyncThunk(
@@ -10,7 +10,7 @@ export const login = createAsyncThunk(
         username,
         password,
       })
-      return response.data // ожидается { token, username }
+      return response.data // { token, username }
     } catch (err) {
       return rejectWithValue(err.response?.data)
     }
@@ -25,7 +25,7 @@ export const signup = createAsyncThunk(
         username,
         password,
       })
-      return response.data // ожидается { token, username }
+      return response.data // { token, username }
     } catch (err) {
       return rejectWithValue(err.response?.data)
     }
@@ -46,6 +46,10 @@ const authSlice = createSlice({
       state.username = null
       localStorage.removeItem('token')
       localStorage.removeItem('username')
+    },
+    // Добавляем редьюсер для очистки ошибки (используется в LoginPage)
+    clearLoginError: (state) => {
+      state.error = null
     },
   },
   extraReducers: (builder) => {
@@ -85,5 +89,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { logout } = authSlice.actions
+export const { logout, clearLoginError } = authSlice.actions
 export default authSlice.reducer
