@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { Modal, Button } from 'react-bootstrap';
+import React, { useEffect, useState, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { Formik, Form, Field } from 'formik'
+import * as Yup from 'yup'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { Modal, Button } from 'react-bootstrap'
 
 import {
   fetchInitialData,
@@ -18,52 +18,52 @@ import {
   createChannel,
   renameChannel,
   removeChannel,
-} from '../slices/chatSlice';
-import { logout } from '../slices/authSlice';
-import socketManager from '../sockets';
-import Header from '../components/Header';
+} from '../slices/chatSlice'
+import { logout } from '../slices/authSlice'
+import socketManager from '../sockets'
+import Header from '../components/Header'
 
 const ChatPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const { channels, messages, currentChannelId, loading, error, sending } =
-    useSelector((state) => state.chat);
-  const token = useSelector((state) => state.auth.token);
+    useSelector((state) => state.chat)
+  const token = useSelector((state) => state.auth.token)
 
   // Реф для отслеживания текущего канала без перезапуска эффектов
-  const currentChannelIdRef = useRef(currentChannelId);
+  const currentChannelIdRef = useRef(currentChannelId)
   useEffect(() => {
-    currentChannelIdRef.current = currentChannelId;
-  }, [currentChannelId]);
+    currentChannelIdRef.current = currentChannelId
+  }, [currentChannelId])
 
-  const [showAddChannel, setShowAddChannel] = useState(false);
-  const [showRenameChannel, setShowRenameChannel] = useState(false);
-  const [showRemoveChannel, setShowRemoveChannel] = useState(false);
-  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [showAddChannel, setShowAddChannel] = useState(false)
+  const [showRenameChannel, setShowRenameChannel] = useState(false)
+  const [showRemoveChannel, setShowRemoveChannel] = useState(false)
+  const [selectedChannel, setSelectedChannel] = useState(null)
 
   // Логирование текущего канала при его изменении
   useEffect(() => {
-    console.log('Current channel ID changed to:', currentChannelId);
-  }, [currentChannelId]);
+    console.log('Current channel ID changed to:', currentChannelId)
+  }, [currentChannelId])
 
   // Подключение к сокетам (без зависимости от currentChannelId)
   useEffect(() => {
     if (!token) {
-      navigate('/login');
-      return;
+      navigate('/login')
+      return
     }
 
-    const socket = socketManager.connect(token);
+    const socket = socketManager.connect(token)
 
     socket.on('connect', () => {
-      console.log('Socket connected for user');
-    });
+      console.log('Socket connected for user')
+    })
 
     socket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err.message);
-    });
+      console.error('Socket connection error:', err.message)
+    })
 
     socket.on('newMessage', (message) => {
       console.log(
@@ -71,71 +71,71 @@ const ChatPage = () => {
         JSON.stringify(message),
         'current channel ref:',
         currentChannelIdRef.current,
-      );
+      )
       // Если канал еще не выбран, выбираем канал полученного сообщения
       if (currentChannelIdRef.current === null) {
         console.log(
           'No channel selected, setting to message channel:',
           message.channelId,
-        );
-        dispatch(setCurrentChannel(message.channelId));
+        )
+        dispatch(setCurrentChannel(message.channelId))
       }
-      dispatch(addMessage(message));
-    });
+      dispatch(addMessage(message))
+    })
 
     socket.on('newChannel', (channel) => {
-      console.log('New channel via socket:', channel);
-      dispatch(addChannel(channel));
-    });
+      console.log('New channel via socket:', channel)
+      dispatch(addChannel(channel))
+    })
 
     socket.on('removeChannel', (channel) => {
-      console.log('Remove channel via socket:', channel);
-      dispatch(removeChannelAction(channel.id));
-    });
+      console.log('Remove channel via socket:', channel)
+      dispatch(removeChannelAction(channel.id))
+    })
 
     socket.on('renameChannel', (channel) => {
-      console.log('Rename channel via socket:', channel);
-      dispatch(renameChannelAction(channel));
-    });
+      console.log('Rename channel via socket:', channel)
+      dispatch(renameChannelAction(channel))
+    })
 
     return () => {
-      socketManager.disconnect();
-    };
-  }, [token, dispatch, navigate]); // убрали currentChannelId
+      socketManager.disconnect()
+    }
+  }, [token, dispatch, navigate]) // убрали currentChannelId
 
   // Загрузка начальных данных
   useEffect(() => {
-    if (!token) return;
+    if (!token) return
     if (channels.length === 0) {
-      dispatch(fetchInitialData());
+      dispatch(fetchInitialData())
     }
-  }, [dispatch, token, channels.length]);
+  }, [dispatch, token, channels.length])
 
   // Установка канала по умолчанию после загрузки данных
   useEffect(() => {
     if (!loading && channels.length > 0 && currentChannelId === null) {
-      console.log('Setting default channel to:', channels[0].id);
-      dispatch(setCurrentChannel(channels[0].id));
+      console.log('Setting default channel to:', channels[0].id)
+      dispatch(setCurrentChannel(channels[0].id))
     }
-  }, [loading, channels, currentChannelId, dispatch]);
+  }, [loading, channels, currentChannelId, dispatch])
 
   // Обработка ошибок (например, 401)
   useEffect(() => {
     if (error && error.status === 401) {
-      dispatch(logout());
-      navigate('/login');
+      dispatch(logout())
+      navigate('/login')
     } else if (error) {
-      toast.error(t('toast.loadingError'));
+      toast.error(t('toast.loadingError'))
     }
-  }, [error, dispatch, navigate, t]);
+  }, [error, dispatch, navigate, t])
 
   const handleChannelSelect = (channelId) => {
-    dispatch(setCurrentChannel(channelId));
-  };
+    dispatch(setCurrentChannel(channelId))
+  }
 
   const filteredMessages = messages.filter(
     (msg) => msg.channelId === currentChannelId,
-  );
+  )
 
   // Логирование количества сообщений при рендере
   useEffect(() => {
@@ -144,53 +144,53 @@ const ChatPage = () => {
       currentChannelId,
       'count:',
       filteredMessages.length,
-    );
-  }, [filteredMessages, currentChannelId]);
+    )
+  }, [filteredMessages, currentChannelId])
 
   const handleSubmitMessage = async (values, { resetForm }) => {
     if (!currentChannelId) {
-      console.error('No channel selected');
-      return;
+      console.error('No channel selected')
+      return
     }
     try {
       await dispatch(
         sendMessage({ text: values.message, channelId: currentChannelId }),
-      ).unwrap();
-      resetForm();
+      ).unwrap()
+      resetForm()
     } catch (err) {
-      console.error('Error sending message:', err);
-      toast.error(t('toast.messageError'));
+      console.error('Error sending message:', err)
+      toast.error(t('toast.messageError'))
     }
-  };
+  }
 
-  const openAddChannel = () => setShowAddChannel(true);
-  const closeAddChannel = () => setShowAddChannel(false);
+  const openAddChannel = () => setShowAddChannel(true)
+  const closeAddChannel = () => setShowAddChannel(false)
 
   const openRenameChannel = (channel) => {
-    console.log('openRenameChannel called for channel:', channel);
-    setSelectedChannel(channel);
-    setShowRenameChannel(true);
-  };
+    console.log('openRenameChannel called for channel:', channel)
+    setSelectedChannel(channel)
+    setShowRenameChannel(true)
+  }
   const closeRenameChannel = () => {
-    setSelectedChannel(null);
-    setShowRenameChannel(false);
-  };
+    setSelectedChannel(null)
+    setShowRenameChannel(false)
+  }
 
   const openRemoveChannel = (channel) => {
-    setSelectedChannel(channel);
-    setShowRemoveChannel(true);
-  };
+    setSelectedChannel(channel)
+    setShowRemoveChannel(true)
+  }
   const closeRemoveChannel = () => {
-    setSelectedChannel(null);
-    setShowRemoveChannel(false);
-  };
+    setSelectedChannel(null)
+    setShowRemoveChannel(false)
+  }
 
   const validateChannelName = (name, currentId = null) => {
     const existing = channels.find(
       (c) => c.name === name && (currentId === null || c.id !== currentId),
-    );
-    return !existing;
-  };
+    )
+    return !existing
+  }
 
   if (loading) {
     return (
@@ -199,7 +199,7 @@ const ChatPage = () => {
           <span className="visually-hidden">{t('loading')}</span>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -228,7 +228,7 @@ const ChatPage = () => {
                   onClick={() => handleChannelSelect(channel.id)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      handleChannelSelect(channel.id);
+                      handleChannelSelect(channel.id)
                     }
                   }}
                   role="button"
@@ -259,12 +259,12 @@ const ChatPage = () => {
                           <button
                             className="dropdown-item"
                             onClick={(e) => {
-                              e.stopPropagation();
+                              e.stopPropagation()
                               console.log(
                                 'Rename menu item clicked for channel:',
                                 channel,
-                              );
-                              openRenameChannel(channel);
+                              )
+                              openRenameChannel(channel)
                             }}
                           >
                             {t('channel.rename')}
@@ -274,8 +274,8 @@ const ChatPage = () => {
                           <button
                             className="dropdown-item text-danger"
                             onClick={(e) => {
-                              e.stopPropagation();
-                              openRemoveChannel(channel);
+                              e.stopPropagation()
+                              openRemoveChannel(channel)
                             }}
                           >
                             {t('channel.remove')}
@@ -293,12 +293,12 @@ const ChatPage = () => {
           <div className="col-9 p-0 h-100 d-flex flex-column">
             <div className="flex-grow-1 overflow-auto p-3">
               {filteredMessages.map((msg) => {
-                console.log('Rendering message:', JSON.stringify(msg));
+                console.log('Rendering message:', JSON.stringify(msg))
                 return (
                   <div key={msg.id} className="mb-2">
                     <b>{msg.username}</b>: {msg.text}
                   </div>
-                );
+                )
               })}
             </div>
             <div className="p-3 border-top">
@@ -346,7 +346,7 @@ const ChatPage = () => {
         {/* ... содержимое остаётся как в вашем файле ... */}
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default ChatPage;
+export default ChatPage
