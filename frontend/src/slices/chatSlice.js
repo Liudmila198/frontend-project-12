@@ -1,36 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import api from '../api'
-import { filterProfanity } from '../utils/profanity'
+import axios from 'axios'
+import routes from '../routes'
 
+// ---------- Асинхронные действия ----------
 export const fetchInitialData = createAsyncThunk(
   'chat/fetchInitialData',
   async (_, { rejectWithValue }) => {
     try {
-      const [channelsRes, messagesRes] = await Promise.all([
-        api.get('/api/v1/channels'),
-        api.get('/api/v1/messages'),
+      const [channelsResponse, messagesResponse] = await Promise.all([
+        axios.get(routes.channelsPath()),
+        axios.get(routes.messagesPath()),
       ])
-      return { channels: channelsRes.data, messages: messagesRes.data }
+      return {
+        channels: channelsResponse.data,
+        messages: messagesResponse.data,
+      }
     } catch (err) {
-      return rejectWithValue({
-        status: err.response?.status,
-        data: err.response?.data,
-      })
-    }
-  },
-)
-
-export const sendMessage = createAsyncThunk(
-  'chat/sendMessage',
-  async ({ text, channelId }, { rejectWithValue }) => {
-    try {
-      console.log('Sending message:', { text, channelId })
-      const response = await api.post('/api/v1/messages', { text, channelId })
-      console.log('Message sent, response data:', response.data)
-      console.log('Message sent keys:', Object.keys(response.data))
-      return response.data
-    } catch (err) {
-      console.error('Send message error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -40,14 +25,9 @@ export const createChannel = createAsyncThunk(
   'chat/createChannel',
   async (name, { rejectWithValue }) => {
     try {
-      console.log('createChannel original name:', name)
-      const cleanName = filterProfanity(name)
-      console.log('createChannel filtered name:', cleanName)
-      const response = await api.post('/api/v1/channels', { name: cleanName })
-      console.log('createChannel response:', response.data)
-      return response.data
+      const response = await axios.post(routes.channelsPath(), { name })
+      return response.data // ожидается объект канала { id, name }
     } catch (err) {
-      console.error('createChannel error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -57,16 +37,9 @@ export const renameChannel = createAsyncThunk(
   'chat/renameChannel',
   async ({ id, name }, { rejectWithValue }) => {
     try {
-      console.log('renameChannel original name:', name)
-      const cleanName = filterProfanity(name)
-      console.log('renameChannel filtered name:', cleanName)
-      const response = await api.patch(`/api/v1/channels/${id}`, {
-        name: cleanName,
-      })
-      console.log('renameChannel response:', response.data)
+      const response = await axios.patch(routes.channelPath(id), { name })
       return response.data
     } catch (err) {
-      console.error('renameChannel error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -76,16 +49,29 @@ export const removeChannel = createAsyncThunk(
   'chat/removeChannel',
   async (id, { rejectWithValue }) => {
     try {
-      console.log('removeChannel id:', id)
-      await api.delete(`/api/v1/channels/${id}`)
+      await axios.delete(routes.channelPath(id))
       return id
     } catch (err) {
-      console.error('removeChannel error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
 )
 
+export const sendMessage = createAsyncThunk(
+  'chat/sendMessage',
+  async ({ text, channelId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(routes.channelMessagesPath(channelId), {
+        text,
+      })
+      return response.data
+    } catch (err) {
+      return rejectWithValue(err.response?.data)
+    }
+  },
+)
+
+// ---------- Слайс ----------
 const chatSlice = createSlice({
   name: 'chat',
   initialState: {
@@ -97,151 +83,128 @@ const chatSlice = createSlice({
     sending: false,
   },
   reducers: {
-    setCurrentChannel(state, action) {
-      console.log('setCurrentChannel:', action.payload)
+    setCurrentChannel: (state, action) => {
       state.currentChannelId = action.payload
     },
-    addMessage(state, action) {
+    addMessage: (state, action) => {
       const message = action.payload
-      console.log(
-        'addMessage called with message:',
-        JSON.stringify(message),
-        'keys:',
-        Object.keys(message),
-        'current messages count:',
-        state.messages.length,
-      )
-      if (!state.messages.some((m) => m.id === message.id)) {
+      const exists = state.messages.some((m) => m.id === message.id)
+      if (!exists) {
         state.messages.push(message)
-        console.log('Message added, new count:', state.messages.length)
-      } else {
-        console.log('Message already exists, skipping')
       }
     },
-    addChannel(state, action) {
+    addChannel: (state, action) => {
       const channel = action.payload
-      console.log('addChannel received:', channel)
-      if (!state.channels.some((c) => c.id === channel.id)) {
-        const filteredChannel = {
-          ...channel,
-          name: filterProfanity(channel.name),
-        }
-        console.log('addChannel filtered:', filteredChannel)
-        state.channels.push(filteredChannel)
+      const exists = state.channels.some((c) => c.id === channel.id)
+      if (!exists) {
+        state.channels.push(channel)
       }
     },
-    removeChannelAction(state, action) {
+    removeChannelAction: (state, action) => {
       const channelId = action.payload
-      console.log('removeChannelAction:', channelId)
       state.channels = state.channels.filter((c) => c.id !== channelId)
+      // переключаемся на общий канал, если удалён текущий
       if (state.currentChannelId === channelId) {
-        state.currentChannelId = state.channels[0]?.id || null
-        console.log('currentChannelId reset to:', state.currentChannelId)
+        const general = state.channels.find((c) => c.id === 1)
+        state.currentChannelId = general ? general.id : null
       }
+      state.messages = state.messages.filter((m) => m.channelId !== channelId)
     },
-    renameChannelAction(state, action) {
-      const { id, name } = action.payload
-      const channel = state.channels.find((c) => c.id === id)
-      if (channel) {
-        const oldName = channel.name
-        channel.name = filterProfanity(name)
-        console.log(
-          `renameChannelAction: channel ${id} renamed from "${oldName}" to "${channel.name}"`,
-        )
+    renameChannelAction: (state, action) => {
+      const updatedChannel = action.payload
+      const index = state.channels.findIndex((c) => c.id === updatedChannel.id)
+      if (index !== -1) {
+        state.channels[index] = { ...state.channels[index], ...updatedChannel }
       }
     },
   },
   extraReducers: (builder) => {
     builder
+      // fetchInitialData
       .addCase(fetchInitialData.pending, (state) => {
-        console.log('fetchInitialData pending')
         state.loading = true
         state.error = null
       })
       .addCase(fetchInitialData.fulfilled, (state, action) => {
-        console.log('fetchInitialData fulfilled')
         state.loading = false
-        state.channels = action.payload.channels.map((c) => ({
-          ...c,
-          name: filterProfanity(c.name),
-        }))
+        state.channels = action.payload.channels
         state.messages = action.payload.messages
-        console.log(
-          'fetchInitialData.fulfilled, messages count:',
-          state.messages.length,
-        )
-        if (!state.currentChannelId && action.payload.channels.length > 0) {
+        if (
+          state.currentChannelId === null &&
+          action.payload.channels.length > 0
+        ) {
           state.currentChannelId = action.payload.channels[0].id
-          console.log('Set currentChannelId to:', state.currentChannelId)
         }
       })
       .addCase(fetchInitialData.rejected, (state, action) => {
-        console.log('fetchInitialData rejected:', action.payload)
         state.loading = false
         state.error = action.payload
       })
-      .addCase(sendMessage.pending, (state) => {
-        console.log('sendMessage pending')
+
+      // createChannel – добавляем канал в любом случае (даже если сокет не сработает)
+      .addCase(createChannel.pending, (state) => {
         state.sending = true
       })
-      .addCase(sendMessage.fulfilled, (state, action) => {
+      .addCase(createChannel.fulfilled, (state, action) => {
         state.sending = false
-        const message = action.payload
-        console.log('sendMessage.fulfilled, message:', JSON.stringify(message))
-        console.log('sendMessage.fulfilled keys:', Object.keys(message))
-        if (!state.messages.some((m) => m.id === message.id)) {
-          state.messages.push(message)
-          console.log(
-            'Message added from sendMessage.fulfilled, new count:',
-            state.messages.length,
-          )
-        } else {
-          console.log(
-            'Message already exists in sendMessage.fulfilled, skipping',
-          )
+        const channel = action.payload
+        const exists = state.channels.some((c) => c.id === channel.id)
+        if (!exists) {
+          state.channels.push(channel)
         }
+      })
+      .addCase(createChannel.rejected, (state, action) => {
+        state.sending = false
+        state.error = action.payload
+      })
+
+      // renameChannel
+      .addCase(renameChannel.pending, (state) => {
+        state.sending = true
+      })
+      .addCase(renameChannel.fulfilled, (state, action) => {
+        state.sending = false
+        const updated = action.payload
+        const index = state.channels.findIndex((c) => c.id === updated.id)
+        if (index !== -1) {
+          state.channels[index] = updated
+        }
+      })
+      .addCase(renameChannel.rejected, (state, action) => {
+        state.sending = false
+        state.error = action.payload
+      })
+
+      // removeChannel
+      .addCase(removeChannel.pending, (state) => {
+        state.sending = true
+      })
+      .addCase(removeChannel.fulfilled, (state, action) => {
+        state.sending = false
+        const channelId = action.payload
+        state.channels = state.channels.filter((c) => c.id !== channelId)
+        if (state.currentChannelId === channelId) {
+          const general = state.channels.find((c) => c.id === 1)
+          state.currentChannelId = general ? general.id : null
+        }
+        state.messages = state.messages.filter((m) => m.channelId !== channelId)
+      })
+      .addCase(removeChannel.rejected, (state, action) => {
+        state.sending = false
+        state.error = action.payload
+      })
+
+      // sendMessage
+      .addCase(sendMessage.pending, (state) => {
+        state.sending = true
+      })
+      .addCase(sendMessage.fulfilled, (state) => {
+        state.sending = false
+        // сообщение уже должно прийти через сокет, не добавляем повторно
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.sending = false
-        console.error('sendMessage rejected:', action.payload)
-      })
-      .addCase(createChannel.fulfilled, (state, action) => {
-        const channel = action.payload
-        console.log('createChannel.fulfilled, raw channel:', channel)
-        const filteredChannel = {
-          ...channel,
-          name: filterProfanity(channel.name),
-        }
-        console.log('createChannel.fulfilled filtered:', filteredChannel)
-        state.channels.push(filteredChannel)
-        state.currentChannelId = channel.id
-        console.log('currentChannelId set to:', channel.id)
-      })
-      .addCase(renameChannel.fulfilled, (state, action) => {
-        const channel = action.payload
-        console.log('renameChannel.fulfilled, channel:', channel)
-        const index = state.channels.findIndex((c) => c.id === channel.id)
-        if (index !== -1) {
-          const oldName = state.channels[index].name
-          state.channels[index] = {
-            ...channel,
-            name: filterProfanity(channel.name),
-          }
-          console.log(
-            `renameChannel.fulfilled: channel ${channel.id} renamed from "${oldName}" to "${state.channels[index].name}"`,
-          )
-        }
-      })
-      .addCase(removeChannel.fulfilled, (state, action) => {
-        const channelId = action.payload
-        console.log('removeChannel.fulfilled:', channelId)
-        state.channels = state.channels.filter((c) => c.id !== channelId)
-        if (state.currentChannelId === channelId) {
-          state.currentChannelId = state.channels[0]?.id || null
-          console.log('currentChannelId after removal:', state.currentChannelId)
-        }
-        state.messages = state.messages.filter((m) => m.channelId !== channelId)
-        console.log('Removed messages for channel', channelId)
+        state.error = action.payload
       })
   },
 })
@@ -253,4 +216,5 @@ export const {
   removeChannelAction,
   renameChannelAction,
 } = chatSlice.actions
+
 export default chatSlice.reducer
