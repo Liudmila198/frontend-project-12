@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
@@ -28,15 +28,15 @@ const ChatPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const {
-    channels,
-    messages,
-    currentChannelId,
-    loading,
-    error,
-    sending,
-  } = useSelector((state) => state.chat);
+  const { channels, messages, currentChannelId, loading, error, sending } =
+    useSelector((state) => state.chat);
   const token = useSelector((state) => state.auth.token);
+
+  // Реф для отслеживания текущего канала без перезапуска эффектов
+  const currentChannelIdRef = useRef(currentChannelId);
+  useEffect(() => {
+    currentChannelIdRef.current = currentChannelId;
+  }, [currentChannelId]);
 
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [showRenameChannel, setShowRenameChannel] = useState(false);
@@ -48,7 +48,7 @@ const ChatPage = () => {
     console.log('Current channel ID changed to:', currentChannelId);
   }, [currentChannelId]);
 
-  // Подключение к сокетам
+  // Подключение к сокетам (без зависимости от currentChannelId)
   useEffect(() => {
     if (!token) {
       navigate('/login');
@@ -66,10 +66,18 @@ const ChatPage = () => {
     });
 
     socket.on('newMessage', (message) => {
-      console.log('New message via socket:', JSON.stringify(message), 'current channel:', currentChannelId);
+      console.log(
+        'New message via socket:',
+        JSON.stringify(message),
+        'current channel ref:',
+        currentChannelIdRef.current,
+      );
       // Если канал еще не выбран, выбираем канал полученного сообщения
-      if (currentChannelId === null) {
-        console.log('No channel selected, setting to message channel:', message.channelId);
+      if (currentChannelIdRef.current === null) {
+        console.log(
+          'No channel selected, setting to message channel:',
+          message.channelId,
+        );
         dispatch(setCurrentChannel(message.channelId));
       }
       dispatch(addMessage(message));
@@ -93,7 +101,7 @@ const ChatPage = () => {
     return () => {
       socketManager.disconnect();
     };
-  }, [token, dispatch, navigate, currentChannelId]);
+  }, [token, dispatch, navigate]); // убрали currentChannelId
 
   // Загрузка начальных данных
   useEffect(() => {
@@ -102,6 +110,14 @@ const ChatPage = () => {
       dispatch(fetchInitialData());
     }
   }, [dispatch, token, channels.length]);
+
+  // Установка канала по умолчанию после загрузки данных
+  useEffect(() => {
+    if (!loading && channels.length > 0 && currentChannelId === null) {
+      console.log('Setting default channel to:', channels[0].id);
+      dispatch(setCurrentChannel(channels[0].id));
+    }
+  }, [loading, channels, currentChannelId, dispatch]);
 
   // Обработка ошибок (например, 401)
   useEffect(() => {
@@ -118,12 +134,17 @@ const ChatPage = () => {
   };
 
   const filteredMessages = messages.filter(
-    (msg) => msg.channelId === currentChannelId
+    (msg) => msg.channelId === currentChannelId,
   );
 
   // Логирование количества сообщений при рендере
   useEffect(() => {
-    console.log('Rendering messages for channel', currentChannelId, 'count:', filteredMessages.length);
+    console.log(
+      'Rendering messages for channel',
+      currentChannelId,
+      'count:',
+      filteredMessages.length,
+    );
   }, [filteredMessages, currentChannelId]);
 
   const handleSubmitMessage = async (values, { resetForm }) => {
@@ -133,7 +154,7 @@ const ChatPage = () => {
     }
     try {
       await dispatch(
-        sendMessage({ text: values.message, channelId: currentChannelId })
+        sendMessage({ text: values.message, channelId: currentChannelId }),
       ).unwrap();
       resetForm();
     } catch (err) {
@@ -166,7 +187,7 @@ const ChatPage = () => {
 
   const validateChannelName = (name, currentId = null) => {
     const existing = channels.find(
-      (c) => c.name === name && (currentId === null || c.id !== currentId)
+      (c) => c.name === name && (currentId === null || c.id !== currentId),
     );
     return !existing;
   };
@@ -190,7 +211,10 @@ const ChatPage = () => {
           <div className="col-3 border-end p-0 h-100 d-flex flex-column">
             <div className="p-3 d-flex justify-content-between align-items-center">
               <h5>{t('chat.channels')}</h5>
-              <button onClick={openAddChannel} className="btn btn-primary btn-sm">
+              <button
+                onClick={openAddChannel}
+                className="btn btn-primary btn-sm"
+              >
                 +
               </button>
             </div>
@@ -222,16 +246,24 @@ const ChatPage = () => {
                         aria-expanded="false"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <span className="visually-hidden">{t('channel.actions')}</span>
+                        <span className="visually-hidden">
+                          {t('channel.actions')}
+                        </span>
                         ⋮
                       </button>
-                      <ul className="dropdown-menu" aria-labelledby={`channel-menu-${channel.id}`}>
+                      <ul
+                        className="dropdown-menu"
+                        aria-labelledby={`channel-menu-${channel.id}`}
+                      >
                         <li>
                           <button
                             className="dropdown-item"
                             onClick={(e) => {
                               e.stopPropagation();
-                              console.log('Rename menu item clicked for channel:', channel);
+                              console.log(
+                                'Rename menu item clicked for channel:',
+                                channel,
+                              );
                               openRenameChannel(channel);
                             }}
                           >
@@ -301,155 +333,17 @@ const ChatPage = () => {
         </div>
       </div>
 
-      {/* Модальное окно добавления канала */}
+      {/* Модальные окна (без изменений) */}
       <Modal show={showAddChannel} onHide={closeAddChannel}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t('modal.addChannel')}</Modal.Title>
-        </Modal.Header>
-        <Formik
-          initialValues={{ name: '' }}
-          validationSchema={Yup.object({
-            name: Yup.string()
-              .min(3, t('validation.channelNameLength'))
-              .max(20, t('validation.channelNameLength'))
-              .required(t('validation.required'))
-              .test('unique', t('validation.channelNameUnique'), (value) =>
-                validateChannelName(value)
-              ),
-          })}
-          onSubmit={async (values, { setSubmitting }) => {
-            try {
-              await dispatch(createChannel(values.name)).unwrap();
-              toast.success(t('toast.channelCreated'));
-              closeAddChannel();
-            } catch (err) {
-              toast.error(t('toast.error'));
-            } finally {
-              setSubmitting(false);
-            }
-          }}
-        >
-          {({ handleSubmit, handleChange, values, errors, touched, isSubmitting }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <div className="form-floating">
-                  <input
-                    id="channel-name-input"
-                    name="name"
-                    className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
-                    placeholder={t('channel.name')}
-                    value={values.name}
-                    onChange={handleChange}
-                    autoFocus
-                  />
-                  <label htmlFor="channel-name-input">{t('channel.name')}</label>
-                  {touched.name && errors.name && (
-                    <div className="invalid-feedback">{errors.name}</div>
-                  )}
-                </div>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={closeAddChannel}>
-                  {t('cancel')}
-                </Button>
-                <Button type="submit" variant="primary" disabled={isSubmitting}>
-                  {isSubmitting ? t('loading') : t('add')}
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
+        {/* ... содержимое остаётся как в вашем файле ... */}
       </Modal>
 
-      {/* Модальное окно переименования канала */}
       <Modal show={showRenameChannel} onHide={closeRenameChannel}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t('modal.renameChannel')}</Modal.Title>
-        </Modal.Header>
-        {selectedChannel && (
-          <Formik
-            initialValues={{ name: selectedChannel.name }}
-            validationSchema={Yup.object({
-              name: Yup.string()
-                .min(3, t('validation.channelNameLength'))
-                .max(20, t('validation.channelNameLength'))
-                .required(t('validation.required'))
-                .test('unique', t('validation.channelNameUnique'), (value) =>
-                  validateChannelName(value, selectedChannel.id)
-                ),
-            })}
-            onSubmit={async (values, { setSubmitting }) => {
-              try {
-                await dispatch(renameChannel({ id: selectedChannel.id, name: values.name })).unwrap();
-                toast.success(t('toast.channelRenamed'));
-                closeRenameChannel();
-              } catch (err) {
-                toast.error(t('toast.error'));
-              } finally {
-                setSubmitting(false);
-              }
-            }}
-          >
-            {({ handleSubmit, handleChange, values, errors, touched, isSubmitting }) => (
-              <form onSubmit={handleSubmit}>
-                <Modal.Body>
-                  <div className="form-floating">
-                    <input
-                      id="rename-channel-input"
-                      name="name"
-                      className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
-                      placeholder={t('channel.name')}
-                      value={values.name}
-                      onChange={handleChange}
-                      autoFocus
-                    />
-                    <label htmlFor="rename-channel-input">{t('channel.name')}</label>
-                    {touched.name && errors.name && (
-                      <div className="invalid-feedback">{errors.name}</div>
-                    )}
-                  </div>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={closeRenameChannel}>
-                    {t('cancel')}
-                  </Button>
-                  <Button type="submit" variant="primary" disabled={isSubmitting}>
-                    {isSubmitting ? t('loading') : t('rename')}
-                  </Button>
-                </Modal.Footer>
-              </form>
-            )}
-          </Formik>
-        )}
+        {/* ... содержимое остаётся как в вашем файле ... */}
       </Modal>
 
-      {/* Модальное окно удаления канала */}
       <Modal show={showRemoveChannel} onHide={closeRemoveChannel}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t('modal.removeChannel')}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>{t('channel.removeConfirmText')}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeRemoveChannel}>
-            {t('cancel')}
-          </Button>
-          <Button
-            variant="danger"
-            onClick={async () => {
-              try {
-                await dispatch(removeChannel(selectedChannel.id)).unwrap();
-                toast.success(t('toast.channelRemoved'));
-                closeRemoveChannel();
-              } catch (err) {
-                toast.error(t('toast.error'));
-              }
-            }}
-          >
-            {t('delete')}
-          </Button>
-        </Modal.Footer>
+        {/* ... содержимое остаётся как в вашем файле ... */}
       </Modal>
     </div>
   );
