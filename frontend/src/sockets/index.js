@@ -1,13 +1,17 @@
 import { io } from 'socket.io-client'
 
+const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+
 class SocketManager {
   constructor() {
     this.socket = null
   }
 
   connect(token) {
-    this.socket = io({
+    if (this.socket) return this.socket
+    this.socket = io(socketUrl, {
       auth: { token },
+      transports: ['websocket'],
     })
     return this.socket
   }
@@ -18,24 +22,7 @@ class SocketManager {
       this.socket = null
     }
   }
-
-  on(event, callback) {
-    if (this.socket) {
-      this.socket.on(event, callback)
-    }
-  }
-
-  off(event, callback) {
-    if (this.socket) {
-      this.socket.off(event, callback)
-    }
-  }
-
-  emit(event, data) {
-    if (this.socket) {
-      this.socket.emit(event, data)
-    }
-  }
 }
 
-export default new SocketManager()
+const socketManager = new SocketManager()
+export default socketManager

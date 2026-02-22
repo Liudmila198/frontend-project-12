@@ -1,10 +1,11 @@
 import axios from 'axios'
 
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || '',
+  baseURL,
 })
 
-// Интерцептор запроса – добавляет токен из localStorage в заголовок Authorization
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')

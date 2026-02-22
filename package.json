@@ -25,6 +25,7 @@
   "homepage": "https://github.com/Liudmila198/frontend-project-12#readme",
   "dependencies": {
     "@hexlet/chat-server": "^2.0.4",
+    "cors": "^2.8.6",
     "formik": "^2.4.9",
     "react-router-dom": "^7.11.0",
     "yup": "^1.7.1"
