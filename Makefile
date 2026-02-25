@@ -12,3 +12,6 @@ start:
 
 dev:
 	cd frontend && npm run dev
+
+prettier:
+	npx prettier --write "src/**/*.{js,jsx}"

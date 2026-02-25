@@ -9,7 +9,6 @@ import './i18n'
 import 'react-toastify/dist/ReactToastify.css'
 import './index.css'
 
-
 const rollbar = new Rollbar({
   accessToken: import.meta.env.VITE_ROLLBAR_TOKEN,
   captureUncaught: true,
