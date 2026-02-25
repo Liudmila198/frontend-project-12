@@ -36,7 +36,8 @@ const ChatPage = () => {
     error,
     sending,
   } = useSelector((state) => state.chat);
-  const token = useSelector((state) => state.auth.token);
+  const token = useSelector((state) => state.auth.token)
+  const username = useSelector((state) => state.auth.username);
 
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [showRenameChannel, setShowRenameChannel] = useState(false);
@@ -104,7 +105,7 @@ const ChatPage = () => {
     }
     try {
       await dispatch(
-        sendMessage({ text: values.message, channelId: currentChannelId })
+        sendMessage({ text: values.message, channelId: currentChannelId, username })
       ).unwrap();
       resetForm();
     } catch (err) {

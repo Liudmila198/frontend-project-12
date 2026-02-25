@@ -22,10 +22,14 @@ export const fetchInitialData = createAsyncThunk(
 
 export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
-  async ({ text, channelId }, { rejectWithValue }) => {
+  async ({ text, channelId, username }, { rejectWithValue }) => {
     try {
-      console.log('Sending message:', { text, channelId })
-      const response = await api.post('/api/v1/messages', { text, channelId })
+      console.log('Sending message:', { text, channelId, username })
+      const response = await api.post('/api/v1/messages', {
+        text,
+        channelId,
+        username,
+      })
       console.log('Message sent, response:', response.data)
       return response.data
     } catch (err) {
