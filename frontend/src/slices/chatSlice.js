@@ -24,16 +24,13 @@ export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
   async ({ text, channelId, username }, { rejectWithValue }) => {
     try {
-      console.log('Sending message:', { text, channelId, username })
       const response = await api.post('/api/v1/messages', {
         text,
         channelId,
         username,
       })
-      console.log('Message sent, response:', response.data)
       return response.data
     } catch (err) {
-      console.error('Send message error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -43,14 +40,10 @@ export const createChannel = createAsyncThunk(
   'chat/createChannel',
   async (name, { rejectWithValue }) => {
     try {
-      console.log('createChannel original name:', name)
       const cleanName = filterProfanity(name)
-      console.log('createChannel filtered name:', cleanName)
       const response = await api.post('/api/v1/channels', { name: cleanName })
-      console.log('createChannel response:', response.data)
       return response.data
     } catch (err) {
-      console.error('createChannel error:', err.response?.data)
       return rejectWithValue(err.response?.data)
     }
   },
@@ -105,13 +98,11 @@ const chatSlice = createSlice({
     },
     addChannel(state, action) {
       const channel = action.payload
-      console.log('addChannel received:', channel)
       if (!state.channels.some((c) => c.id === channel.id)) {
         const filteredChannel = {
           ...channel,
           name: filterProfanity(channel.name),
         }
-        console.log('addChannel filtered:', filteredChannel)
         state.channels.push(filteredChannel)
       }
     },
@@ -167,12 +158,10 @@ const chatSlice = createSlice({
       })
       .addCase(createChannel.fulfilled, (state, action) => {
         const channel = action.payload
-        console.log('createChannel.fulfilled, raw channel:', channel)
         const filteredChannel = {
           ...channel,
           name: filterProfanity(channel.name),
         }
-        console.log('createChannel.fulfilled filtered:', filteredChannel)
         state.channels.push(filteredChannel)
         state.currentChannelId = channel.id
       })

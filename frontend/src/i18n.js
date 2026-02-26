@@ -14,7 +14,6 @@ const resources = {
       add: 'Добавить',
       close: 'Закрыть',
       confirm: 'Подтвердить',
-
       'login.title': 'Войти',
       'login.username': 'Ваш ник',
       'login.password': 'Пароль',
