@@ -6,7 +6,7 @@ import { logout } from '../slices/authSlice'
 const Header = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector(state => state.auth.token)
   const { t } = useTranslation()
 
   const handleLogout = () => {

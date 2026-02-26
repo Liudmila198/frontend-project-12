@@ -6,7 +6,7 @@ import ChatPage from './pages/ChatPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 const PrivateRoute = ({ children }) => {
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector(state => state.auth.token)
   return token ? children : <Navigate to="/login" />
 }
 

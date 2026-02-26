@@ -33,7 +33,7 @@ const SignupPage = () => {
         .oneOf([Yup.ref('password'), null], t('validation.passwordsMustMatch'))
         .required(t('validation.required')),
     }),
-    onSubmit: async values => {
+    onSubmit: async (values) => {
       dispatch(clearRegisterError())
       const resultAction = await dispatch(register(values))
       if (register.fulfilled.match(resultAction)) {
