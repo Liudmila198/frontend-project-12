@@ -52,7 +52,7 @@ const SignupPage = () => {
               <div className="card-body row p-5">
                 <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
                   <img
-                    src="/assets/avatar-DIE1AEpS.jpg"
+                    src="/assets/avatar_1-D7Cot-zE.jpg"
                     className="rounded-circle"
                     alt={t('signup.title')}
                   />
