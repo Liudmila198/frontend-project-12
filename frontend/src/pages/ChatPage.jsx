@@ -46,19 +46,19 @@ const ChatPage = () => {
 
     const socket = socketManager.connect(token)
 
-    socket.on('newMessage', message => {
+    socket.on('newMessage', (message) => {
       dispatch(addMessage(message))
     })
 
-    socket.on('newChannel', channel => {
+    socket.on('newChannel', (channel) => {
       dispatch(addChannel(channel))
     })
 
-    socket.on('removeChannel', channel => {
+    socket.on('removeChannel', (channel) => {
       dispatch(removeChannelAction(channel.id))
     })
 
-    socket.on('renameChannel', channel => {
+    socket.on('renameChannel', (channel) => {
       dispatch(renameChannelAction(channel))
     })
 
@@ -84,7 +84,7 @@ const ChatPage = () => {
     }
   }, [error, dispatch, navigate, t])
 
-  const handleChannelSelect = channelId => {
+  const handleChannelSelect = (channelId) => {
     dispatch(setCurrentChannel(channelId))
   }
 
@@ -113,10 +113,10 @@ const ChatPage = () => {
     }
   }
 
-  const openAddChannel = () => setShowAddChannel(true)
-  const closeAddChannel = () => setShowAddChannel(false)
+  const openAddChannel = () => { setShowAddChannel(true); }
+  const closeAddChannel = () => { setShowAddChannel(false); }
 
-  const openRenameChannel = channel => {
+  const openRenameChannel = (channel) => {
     setSelectedChannel(channel)
     setShowRenameChannel(true)
   }
@@ -125,7 +125,7 @@ const ChatPage = () => {
     setShowRenameChannel(false)
   }
 
-  const openRemoveChannel = channel => {
+  const openRemoveChannel = (channel) => {
     setSelectedChannel(channel)
     setShowRemoveChannel(true)
   }
