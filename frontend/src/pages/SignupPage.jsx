@@ -11,7 +11,7 @@ const SignupPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { loading, registerError, token } = useSelector((state) => state.auth)
+  const { loading, registerError, token } = useSelector(state => state.auth)
 
   useEffect(() => {
     if (token) {
@@ -33,7 +33,7 @@ const SignupPage = () => {
         .oneOf([Yup.ref('password'), null], t('validation.passwordsMustMatch'))
         .required(t('validation.required')),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async values => {
       dispatch(clearRegisterError())
       const resultAction = await dispatch(register(values))
       if (register.fulfilled.match(resultAction)) {
@@ -123,12 +123,12 @@ const SignupPage = () => {
                     <label htmlFor="confirm-password">
                       {t('signup.confirmPassword')}
                     </label>
-                    {formik.touched.confirmPassword &&
-                      formik.errors.confirmPassword && (
-                        <div className="invalid-feedback">
-                          {formik.errors.confirmPassword}
-                        </div>
-                      )}
+                    {formik.touched.confirmPassword
+                      && formik.errors.confirmPassword && (
+                      <div className="invalid-feedback">
+                        {formik.errors.confirmPassword}
+                      </div>
+                    )}
                   </div>
                   <button
                     type="submit"
@@ -141,7 +141,8 @@ const SignupPage = () => {
               </div>
               <div className="card-footer p-4">
                 <div className="text-center">
-                  <span>{t('signup.alreadyHaveAccount')}</span>{' '}
+                  <span>{t('signup.alreadyHaveAccount')}</span>
+                  {' '}
                   <Link to="/login">{t('signup.loginLink')}</Link>
                 </div>
               </div>

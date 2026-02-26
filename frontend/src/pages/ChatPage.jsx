@@ -28,10 +28,10 @@ const ChatPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const { channels, messages, currentChannelId, loading, error, sending } =
-    useSelector((state) => state.chat)
-  const token = useSelector((state) => state.auth.token)
-  const username = useSelector((state) => state.auth.username)
+  const { channels, messages, currentChannelId, loading, error, sending }
+    = useSelector(state => state.chat)
+  const token = useSelector(state => state.auth.token)
+  const username = useSelector(state => state.auth.username)
 
   const [showAddChannel, setShowAddChannel] = useState(false)
   const [showRenameChannel, setShowRenameChannel] = useState(false)
@@ -46,19 +46,19 @@ const ChatPage = () => {
 
     const socket = socketManager.connect(token)
 
-    socket.on('newMessage', (message) => {
+    socket.on('newMessage', message => {
       dispatch(addMessage(message))
     })
 
-    socket.on('newChannel', (channel) => {
+    socket.on('newChannel', channel => {
       dispatch(addChannel(channel))
     })
 
-    socket.on('removeChannel', (channel) => {
+    socket.on('removeChannel', channel => {
       dispatch(removeChannelAction(channel.id))
     })
 
-    socket.on('renameChannel', (channel) => {
+    socket.on('renameChannel', channel => {
       dispatch(renameChannelAction(channel))
     })
 
@@ -78,17 +78,18 @@ const ChatPage = () => {
     if (error && error.status === 401) {
       dispatch(logout())
       navigate('/login')
-    } else if (error) {
+    }
+    else if (error) {
       toast.error(t('toast.loadingError'))
     }
   }, [error, dispatch, navigate, t])
 
-  const handleChannelSelect = (channelId) => {
+  const handleChannelSelect = channelId => {
     dispatch(setCurrentChannel(channelId))
   }
 
   const filteredMessages = messages.filter(
-    (msg) => msg.channelId === currentChannelId,
+    msg => msg.channelId === currentChannelId,
   )
 
   const handleSubmitMessage = async (values, { resetForm }) => {
@@ -104,7 +105,8 @@ const ChatPage = () => {
         }),
       ).unwrap()
       resetForm()
-    } catch {
+    }
+    catch {
       toast.error(t('toast.messageError'))
     }
   }
@@ -112,7 +114,7 @@ const ChatPage = () => {
   const openAddChannel = () => setShowAddChannel(true)
   const closeAddChannel = () => setShowAddChannel(false)
 
-  const openRenameChannel = (channel) => {
+  const openRenameChannel = channel => {
     setSelectedChannel(channel)
     setShowRenameChannel(true)
   }
@@ -121,7 +123,7 @@ const ChatPage = () => {
     setShowRenameChannel(false)
   }
 
-  const openRemoveChannel = (channel) => {
+  const openRemoveChannel = channel => {
     setSelectedChannel(channel)
     setShowRemoveChannel(true)
   }
@@ -132,7 +134,7 @@ const ChatPage = () => {
 
   const validateChannelName = (name, currentId = null) => {
     const existing = channels.find(
-      (c) => c.name === name && (currentId === null || c.id !== currentId),
+      c => c.name === name && (currentId === null || c.id !== currentId),
     )
     return !existing
   }
@@ -164,14 +166,14 @@ const ChatPage = () => {
               </button>
             </div>
             <ul className="list-group flex-grow-1 overflow-auto">
-              {channels.map((channel) => (
+              {channels.map(channel => (
                 <li
                   key={channel.id}
                   className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
                     currentChannelId === channel.id ? 'active' : ''
                   }`}
                   onClick={() => handleChannelSelect(channel.id)}
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       handleChannelSelect(channel.id)
                     }
@@ -189,7 +191,7 @@ const ChatPage = () => {
                         id={`channel-menu-${channel.id}`}
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={e => e.stopPropagation()}
                       >
                         <span className="visually-hidden">
                           {t('channel.actions')}
@@ -203,7 +205,7 @@ const ChatPage = () => {
                         <li>
                           <button
                             className="dropdown-item"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation()
                               openRenameChannel(channel)
                             }}
@@ -214,7 +216,7 @@ const ChatPage = () => {
                         <li>
                           <button
                             className="dropdown-item text-danger"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation()
                               openRemoveChannel(channel)
                             }}
@@ -233,7 +235,7 @@ const ChatPage = () => {
           {/* Сообщения и форма отправки */}
           <div className="col-9 p-0 h-100 d-flex flex-column">
             <div className="flex-grow-1 overflow-auto p-3">
-              {filteredMessages.map((msg) => (
+              {filteredMessages.map(msg => (
                 <div key={msg.id} className="mb-2">
                   <b>{msg.username}</b>
                   {': '}
@@ -285,7 +287,7 @@ const ChatPage = () => {
               .min(3, t('validation.channelNameLength'))
               .max(20, t('validation.channelNameLength'))
               .required(t('validation.required'))
-              .test('unique', t('validation.channelNameUnique'), (value) =>
+              .test('unique', t('validation.channelNameUnique'), value =>
                 validateChannelName(value),
               ),
           })}
@@ -294,9 +296,11 @@ const ChatPage = () => {
               await dispatch(createChannel(values.name)).unwrap()
               toast.success(t('toast.channelCreated'))
               closeAddChannel()
-            } catch {
+            }
+            catch {
               toast.error(t('toast.error'))
-            } finally {
+            }
+            finally {
               setSubmitting(false)
             }
           }}
@@ -355,7 +359,7 @@ const ChatPage = () => {
                 .min(3, t('validation.channelNameLength'))
                 .max(20, t('validation.channelNameLength'))
                 .required(t('validation.required'))
-                .test('unique', t('validation.channelNameUnique'), (value) =>
+                .test('unique', t('validation.channelNameUnique'), value =>
                   validateChannelName(value, selectedChannel.id),
                 ),
             })}
@@ -366,9 +370,11 @@ const ChatPage = () => {
                 ).unwrap()
                 toast.success(t('toast.channelRenamed'))
                 closeRenameChannel()
-              } catch {
+              }
+              catch {
                 toast.error(t('toast.error'))
-              } finally {
+              }
+              finally {
                 setSubmitting(false)
               }
             }}
@@ -438,7 +444,8 @@ const ChatPage = () => {
                 await dispatch(removeChannel(selectedChannel.id)).unwrap()
                 toast.success(t('toast.channelRemoved'))
                 closeRemoveChannel()
-              } catch {
+              }
+              catch {
                 toast.error(t('toast.error'))
               }
             }}
