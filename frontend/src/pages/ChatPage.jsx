@@ -46,19 +46,19 @@ const ChatPage = () => {
 
     const socket = socketManager.connect(token)
 
-    socket.on('newMessage', (message) => {
+    socket.on('newMessage', message => {
       dispatch(addMessage(message))
     })
 
-    socket.on('newChannel', (channel) => {
+    socket.on('newChannel', channel => {
       dispatch(addChannel(channel))
     })
 
-    socket.on('removeChannel', (channel) => {
+    socket.on('removeChannel', channel => {
       dispatch(removeChannelAction(channel.id))
     })
 
-    socket.on('renameChannel', (channel) => {
+    socket.on('renameChannel', channel => {
       dispatch(renameChannelAction(channel))
     })
 
@@ -84,7 +84,7 @@ const ChatPage = () => {
     }
   }, [error, dispatch, navigate, t])
 
-  const handleChannelSelect = (channelId) => {
+  const handleChannelSelect = channelId => {
     dispatch(setCurrentChannel(channelId))
   }
 
@@ -113,10 +113,10 @@ const ChatPage = () => {
     }
   }
 
-  const openAddChannel = () => { setShowAddChannel(true); }
-  const closeAddChannel = () => { setShowAddChannel(false); }
+  const openAddChannel = () => setShowAddChannel(true)
+  const closeAddChannel = () => setShowAddChannel(false)
 
-  const openRenameChannel = (channel) => {
+  const openRenameChannel = channel => {
     setSelectedChannel(channel)
     setShowRenameChannel(true)
   }
@@ -125,7 +125,7 @@ const ChatPage = () => {
     setShowRenameChannel(false)
   }
 
-  const openRemoveChannel = (channel) => {
+  const openRemoveChannel = channel => {
     setSelectedChannel(channel)
     setShowRemoveChannel(true)
   }
@@ -244,7 +244,6 @@ const ChatPage = () => {
           {/* Область сообщений */}
           <div className="col p-0 h-100">
             <div className="d-flex flex-column h-100">
-              {/* Заголовок канала */}
               <div className="bg-light mb-4 p-3 shadow-sm small">
                 <p className="m-0">
                   <b>
@@ -260,7 +259,6 @@ const ChatPage = () => {
                 </span>
               </div>
 
-              {/* Сообщения */}
               <div id="messages-box" className="chat-messages overflow-auto px-5">
                 {filteredMessages.map(msg => (
                   <div key={msg.id} className="text-break mb-2">
@@ -271,7 +269,6 @@ const ChatPage = () => {
                 ))}
               </div>
 
-              {/* Форма отправки */}
               <div className="mt-auto px-5 py-3">
                 <Formik
                   initialValues={{ message: '' }}
