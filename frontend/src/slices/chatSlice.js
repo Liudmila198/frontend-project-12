@@ -11,7 +11,7 @@ export const fetchInitialData = createAsyncThunk(
         api.get('/api/v1/messages'),
       ])
       return { channels: channelsRes.data, messages: messagesRes.data }
-    } 
+    }
     catch (err) {
       return rejectWithValue({
         status: err.response?.status,
@@ -31,7 +31,7 @@ export const sendMessage = createAsyncThunk(
         username,
       })
       return response.data
-    } 
+    }
     catch (err) {
       return rejectWithValue(err.response?.data)
     }
@@ -45,7 +45,7 @@ export const createChannel = createAsyncThunk(
       const cleanName = filterProfanity(name)
       const response = await api.post('/api/v1/channels', { name: cleanName })
       return response.data
-    } 
+    }
     catch (err) {
       return rejectWithValue(err.response?.data)
     }
@@ -61,7 +61,7 @@ export const renameChannel = createAsyncThunk(
         name: cleanName,
       })
       return response.data
-    } 
+    }
     catch (err) {
       return rejectWithValue(err.response?.data)
     }
@@ -74,7 +74,7 @@ export const removeChannel = createAsyncThunk(
     try {
       await api.delete(`/api/v1/channels/${id}`)
       return id
-    } 
+    }
     catch (err) {
       return rejectWithValue(err.response?.data)
     }

@@ -18,11 +18,11 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route
           path="/"
-          element={
+          element={(
             <PrivateRoute>
               <ChatPage />
             </PrivateRoute>
-          }
+          )}
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
