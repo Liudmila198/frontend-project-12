@@ -6,8 +6,8 @@ const resources = {
     translation: {
       'header.brand': 'Hexlet Chat',
       'header.logout': 'Выйти',
-      loading: 'Загрузка...',
-      send: 'Отправить',
+      'loading': 'Загрузка...',
+      'send': 'Отправить',
       cancel: 'Отмена',
       delete: 'Удалить',
       rename: 'Переименовать',

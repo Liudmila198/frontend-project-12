@@ -15,3 +15,6 @@ dev:
 
 prettier:
 	npx prettier --write "src/**/*.{js,jsx}"
+
+lint:
+	cd frontend && npx eslint src
