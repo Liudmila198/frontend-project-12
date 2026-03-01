@@ -29,9 +29,9 @@ const ChatPage = () => {
   const { t } = useTranslation()
 
   const { channels, messages, currentChannelId, loading, error, sending } =
-    useSelector((state) => state.chat)
-  const token = useSelector((state) => state.auth.token)
-  const username = useSelector((state) => state.auth.username)
+    useSelector(state => state.chat)
+  const token = useSelector(state => state.auth.token)
+  const username = useSelector(state => state.auth.username)
 
   const [showAddChannel, setShowAddChannel] = useState(false)
   const [showRenameChannel, setShowRenameChannel] = useState(false)
@@ -78,7 +78,8 @@ const ChatPage = () => {
     if (error && error.status === 401) {
       dispatch(logout())
       navigate('/login')
-    } else if (error) {
+    }
+    else if (error) {
       toast.error(t('toast.loadingError'))
     }
   }, [error, dispatch, navigate, t])
@@ -87,7 +88,7 @@ const ChatPage = () => {
     dispatch(setCurrentChannel(channelId))
   }
 
-  const currentChannel = channels.find((c) => c.id === currentChannelId)
+  const currentChannel = channels.find(c => c.id === currentChannelId)
 
   const filteredMessages = messages.filter(
     (msg) => msg.channelId === currentChannelId,
@@ -106,7 +107,8 @@ const ChatPage = () => {
         }),
       ).unwrap()
       resetForm()
-    } catch {
+    }
+    catch {
       toast.error(t('toast.messageError'))
     }
   }

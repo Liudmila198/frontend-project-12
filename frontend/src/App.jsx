@@ -6,7 +6,7 @@ import ChatPage from './pages/ChatPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 const PrivateRoute = ({ children }) => {
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector(state => state.auth.token)
   return token ? children : <Navigate to="/login" />
 }
 
@@ -18,11 +18,11 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route
           path="/"
-          element={
+          element={(
             <PrivateRoute>
               <ChatPage />
             </PrivateRoute>
-          }
+          )}
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
