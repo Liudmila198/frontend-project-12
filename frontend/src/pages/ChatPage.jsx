@@ -186,57 +186,57 @@ const ChatPage = () => {
                 <li key={channel.id} className="nav-item w-100">
                   {channel.removable === false
                     ? (
-                      <button
-                        type="button"
-                        className={`w-100 rounded-1 text-start btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
-                        onClick={() => handleChannelSelect(channel.id)}
-                      >
-                        <span className="me-1">#</span>
-                        {channel.name}
-                      </button>
-                    )
-                    : (
-                      <div className="d-flex dropdown btn-group">
                         <button
                           type="button"
-                          className={`w-100 rounded-1 text-start text-truncate btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
+                          className={`w-100 rounded-1 text-start btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
                           onClick={() => handleChannelSelect(channel.id)}
                         >
                           <span className="me-1">#</span>
                           {channel.name}
                         </button>
-                        <button
-                          type="button"
-                          className={`flex-grow-0 dropdown-toggle dropdown-toggle-split btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
-                          <span className="visually-hidden">
-                            {t('channel.actions')}
-                          </span>
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item"
-                              onClick={() => openRenameChannel(channel)}
-                            >
-                              {t('channel.rename')}
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item text-danger"
-                              onClick={() => openRemoveChannel(channel)}
-                            >
-                              {t('channel.remove')}
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    )}
+                      )
+                    : (
+                        <div className="d-flex dropdown btn-group">
+                          <button
+                            type="button"
+                            className={`w-100 rounded-1 text-start text-truncate btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
+                            onClick={() => handleChannelSelect(channel.id)}
+                          >
+                            <span className="me-1">#</span>
+                            {channel.name}
+                          </button>
+                          <button
+                            type="button"
+                            className={`flex-grow-0 dropdown-toggle dropdown-toggle-split btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            <span className="visually-hidden">
+                              {t('channel.actions')}
+                            </span>
+                          </button>
+                          <ul className="dropdown-menu">
+                            <li>
+                              <button
+                                type="button"
+                                className="dropdown-item"
+                                onClick={() => openRenameChannel(channel)}
+                              >
+                                {t('channel.rename')}
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                type="button"
+                                className="dropdown-item text-danger"
+                                onClick={() => openRemoveChannel(channel)}
+                              >
+                                {t('channel.remove')}
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
                 </li>
               ))}
             </ul>
