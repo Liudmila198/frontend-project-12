@@ -10,7 +10,8 @@ export const login = createAsyncThunk(
         password,
       })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data || 'Ошибка авторизации')
     }
   },
@@ -25,7 +26,8 @@ export const register = createAsyncThunk(
         password,
       })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue({
         status: err.response?.status,
         data: err.response?.data,

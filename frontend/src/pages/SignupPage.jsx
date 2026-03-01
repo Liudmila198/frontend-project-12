@@ -11,7 +11,7 @@ const SignupPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { loading, registerError, token } = useSelector((state) => state.auth)
+  const { loading, registerError, token } = useSelector(state => state.auth)
 
   useEffect(() => {
     if (token) {
@@ -123,8 +123,10 @@ const SignupPage = () => {
                     <label htmlFor="confirm-password">
                       {t('signup.confirmPassword')}
                     </label>
-                    {formik.touched.confirmPassword &&
-                      formik.errors.confirmPassword && (
+                    {formik.touched.confirmPassword 
+                    &&
+                      formik.errors.confirmPassword 
+                      && (
                         <div className="invalid-feedback">
                           {formik.errors.confirmPassword}
                         </div>

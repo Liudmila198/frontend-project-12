@@ -9,8 +9,8 @@ export default defineConfig([
   globalIgnores(['dist', '.eslintrc.cjs']),
   {
     files: ['**/*.{js,jsx}'],
-   extends: [
-   js.configs.recommended,
+    extends: [
+      js.configs.recommended,
     ],
     languageOptions: {
       globals: { ...globals.browser },
@@ -47,4 +47,3 @@ export default defineConfig([
     },
   },
 ])
-

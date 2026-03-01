@@ -8,7 +8,7 @@ const resources = {
       'header.logout': 'Выйти',
       'loading': 'Загрузка...',
       'send': 'Отправить',
-      'cancel' : 'Отмена',
+      'cancel': 'Отмена',
       'delete': 'Удалить',
       'rename': 'Переименовать',
       'add': 'Добавить',

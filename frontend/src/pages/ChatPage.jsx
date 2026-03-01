@@ -91,7 +91,7 @@ const ChatPage = () => {
   const currentChannel = channels.find(c => c.id === currentChannelId)
 
   const filteredMessages = messages.filter(
-    (msg) => msg.channelId === currentChannelId,
+    msg => msg.channelId === currentChannelId,
   )
 
   const handleSubmitMessage = async (values, { resetForm }) => {
@@ -136,7 +136,7 @@ const ChatPage = () => {
 
   const validateChannelName = (name, currentId = null) => {
     const existing = channels.find(
-      (c) => c.name === name && (currentId === null || c.id !== currentId),
+      c => c.name === name && (currentId === null || c.id !== currentId),
     )
     return !existing
   }
@@ -182,7 +182,7 @@ const ChatPage = () => {
               id="channels-box"
               className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
             >
-              {channels.map((channel) => (
+              {channels.map(channel => (
                 <li key={channel.id} className="nav-item w-100">
                   {channel.removable === false ? (
                     <button
@@ -256,7 +256,7 @@ const ChatPage = () => {
                 id="messages-box"
                 className="chat-messages overflow-auto px-5"
               >
-                {filteredMessages.map((msg) => (
+                {filteredMessages.map(msg => (
                   <div key={msg.id} className="text-break mb-2">
                     <b>{msg.username}</b>
                     {': '}
