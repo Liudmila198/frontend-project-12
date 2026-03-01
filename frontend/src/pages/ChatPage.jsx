@@ -28,8 +28,8 @@ const ChatPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const { channels, messages, currentChannelId, loading, error, sending } =
-    useSelector(state => state.chat)
+  const { channels, messages, currentChannelId, loading, error, sending }
+    = useSelector(state => state.chat)
   const token = useSelector(state => state.auth.token)
   const username = useSelector(state => state.auth.username)
 
@@ -184,7 +184,8 @@ const ChatPage = () => {
             >
               {channels.map(channel => (
                 <li key={channel.id} className="nav-item w-100">
-                  {channel.removable === false ? (
+                  {channel.removable === false
+                  ? (
                     <button
                       type="button"
                       className={`w-100 rounded-1 text-start btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
@@ -245,7 +246,9 @@ const ChatPage = () => {
             <div className="d-flex flex-column h-100">
               <div className="bg-light mb-4 p-3 shadow-sm small">
                 <p className="m-0">
-                  <b># {currentChannel?.name}</b>
+                  <b>
+                    #
+                    {currentChannel?.name}</b>
                 </p>
                 <span className="text-muted">
                   {filteredMessages.length} сообщений

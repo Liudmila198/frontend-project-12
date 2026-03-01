@@ -45,7 +45,8 @@ export const createChannel = createAsyncThunk(
       const cleanName = filterProfanity(name)
       const response = await api.post('/api/v1/channels', { name: cleanName })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -60,7 +61,8 @@ export const renameChannel = createAsyncThunk(
         name: cleanName,
       })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -72,7 +74,8 @@ export const removeChannel = createAsyncThunk(
     try {
       await api.delete(`/api/v1/channels/${id}`)
       return id
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -94,7 +97,7 @@ const chatSlice = createSlice({
     },
     addMessage(state, action) {
       const message = action.payload
-      if (!state.messages.some((m) => m.id === message.id)) {
+      if (!state.messages.some(m => m.id === message.id)) {
         state.messages.push(message)
       }
     },
@@ -150,7 +153,7 @@ const chatSlice = createSlice({
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.sending = false
         const message = action.payload
-        if (!state.messages.some((m) => m.id === message.id)) {
+        if (!state.messages.some(m => m.id === message.id)) {
           state.messages.push(message)
         }
       })

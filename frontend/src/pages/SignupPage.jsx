@@ -123,10 +123,11 @@ const SignupPage = () => {
                     <label htmlFor="confirm-password">
                       {t('signup.confirmPassword')}
                     </label>
-                    {formik.touched.confirmPassword 
+                    {formik.touched.confirmPassword
                     &&
-                      formik.errors.confirmPassword 
-                      && (
+                      formik.errors.confirmPassword
+                      &&
+                      (
                         <div className="invalid-feedback">
                           {formik.errors.confirmPassword}
                         </div>
@@ -143,7 +144,8 @@ const SignupPage = () => {
               </div>
               <div className="card-footer p-4">
                 <div className="text-center">
-                  <span>{t('signup.alreadyHaveAccount')}</span>{' '}
+                  <span>{t('signup.alreadyHaveAccount')}</span>
+                  {' '}
                   <Link to="/login">{t('signup.loginLink')}</Link>
                 </div>
               </div>
