@@ -3,6 +3,8 @@
 
 # Hexlet Chat Project
 
+https://frontend-project-12-kt7c.onrender.com/login
+
 https://dashboard.render.com/web/srv-d4pe8uer433s73elsfm0/deploys/dep-d4pe8uur433s73elsg9g
 
 ## Ссылка на задеплоенное приложение
