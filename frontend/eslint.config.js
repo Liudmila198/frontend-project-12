@@ -44,6 +44,7 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
       'no-console': 'off',
       'no-underscore-dangle': ['error', { allow: ['__filename', '__dirname'] }],
+      'semi': ['error', 'never']
     },
   },
 ])

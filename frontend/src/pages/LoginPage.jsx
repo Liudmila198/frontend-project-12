@@ -11,7 +11,7 @@ const LoginPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { loading, loginError, token } = useSelector(state => state.auth)
+  const { loading, loginError, token } = useSelector((state) => state.auth)
 
   useEffect(() => {
     if (token) {
@@ -107,8 +107,7 @@ const LoginPage = () => {
               </div>
               <div className="card-footer p-4">
                 <div className="text-center">
-                  <span>{t('login.noAccount')}</span>
-                  {' '}
+                  <span>{t('login.noAccount')}</span>{' '}
                   <Link to="/signup">{t('login.signupLink')}</Link>
                 </div>
               </div>

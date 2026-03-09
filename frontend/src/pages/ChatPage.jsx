@@ -504,14 +504,14 @@
 // }
 
 // export default ChatPage
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { Modal, Button } from 'react-bootstrap';
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { Formik, Form, Field } from 'formik'
+import * as Yup from 'yup'
+import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import { Modal, Button } from 'react-bootstrap'
 
 import {
   fetchInitialData,
@@ -520,60 +520,59 @@ import {
   createChannel,
   renameChannel,
   removeChannel,
-} from '../slices/chatSlice';
-import { logout } from '../slices/authSlice';
-import Header from '../components/Header';
-import { useSocket } from '../sockets/SocketContext'; // контекст нужен только для подключения, методы не вызываем
+} from '../slices/chatSlice'
+import { logout } from '../slices/authSlice'
+import Header from '../components/Header'
+import { useSocket } from '../sockets/SocketContext' // контекст нужен только для подключения, методы не вызываем
 
 const ChatPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const socket = useSocket(); // обеспечивает подключение сокета, но методы не используем
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const socket = useSocket() // обеспечивает подключение сокета, но методы не используем
 
-  const { channels, messages, currentChannelId, loading, error, sending } = useSelector(
-    (state) => state.chat
-  );
-  const token = useSelector((state) => state.auth.token);
-  const username = useSelector((state) => state.auth.username);
+  const { channels, messages, currentChannelId, loading, error, sending } =
+    useSelector((state) => state.chat)
+  const token = useSelector((state) => state.auth.token)
+  const username = useSelector((state) => state.auth.username)
 
-  const [showAddChannel, setShowAddChannel] = useState(false);
-  const [showRenameChannel, setShowRenameChannel] = useState(false);
-  const [showRemoveChannel, setShowRemoveChannel] = useState(false);
-  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [showAddChannel, setShowAddChannel] = useState(false)
+  const [showRenameChannel, setShowRenameChannel] = useState(false)
+  const [showRemoveChannel, setShowRemoveChannel] = useState(false)
+  const [selectedChannel, setSelectedChannel] = useState(null)
 
   // Загрузка начальных данных и выбор первого канала
   useEffect(() => {
-    if (!token) return;
+    if (!token) return
 
     if (channels.length === 0) {
-      dispatch(fetchInitialData());
+      dispatch(fetchInitialData())
     } else if (!currentChannelId && channels.length > 0) {
-      dispatch(setCurrentChannel(channels[0].id));
+      dispatch(setCurrentChannel(channels[0].id))
     }
-  }, [dispatch, token, channels.length, currentChannelId, channels]);
+  }, [dispatch, token, channels.length, currentChannelId, channels])
 
   // Обработка ошибок (например, 401)
   useEffect(() => {
     if (error && error.status === 401) {
-      dispatch(logout());
-      navigate('/login');
+      dispatch(logout())
+      navigate('/login')
     } else if (error) {
-      toast.error(t('toast.loadingError'));
+      toast.error(t('toast.loadingError'))
     }
-  }, [error, dispatch, navigate, t]);
+  }, [error, dispatch, navigate, t])
 
   const handleChannelSelect = (channelId) => {
-    dispatch(setCurrentChannel(channelId));
-  };
+    dispatch(setCurrentChannel(channelId))
+  }
 
-  const currentChannel = channels.find((c) => c.id === currentChannelId);
+  const currentChannel = channels.find((c) => c.id === currentChannelId)
   const filteredMessages = messages.filter(
-    (msg) => msg.channelId === currentChannelId
-  );
+    (msg) => msg.channelId === currentChannelId,
+  )
 
   const handleSubmitMessage = async (values, { resetForm }) => {
-    if (!currentChannelId) return;
+    if (!currentChannelId) return
 
     try {
       await dispatch(
@@ -581,41 +580,41 @@ const ChatPage = () => {
           text: values.message,
           channelId: currentChannelId,
           username,
-        })
-      ).unwrap();
-      resetForm();
+        }),
+      ).unwrap()
+      resetForm()
     } catch {
-      toast.error(t('toast.messageError'));
+      toast.error(t('toast.messageError'))
     }
-  };
+  }
 
-  const openAddChannel = () => setShowAddChannel(true);
-  const closeAddChannel = () => setShowAddChannel(false);
+  const openAddChannel = () => setShowAddChannel(true)
+  const closeAddChannel = () => setShowAddChannel(false)
 
   const openRenameChannel = (channel) => {
-    setSelectedChannel(channel);
-    setShowRenameChannel(true);
-  };
+    setSelectedChannel(channel)
+    setShowRenameChannel(true)
+  }
   const closeRenameChannel = () => {
-    setSelectedChannel(null);
-    setShowRenameChannel(false);
-  };
+    setSelectedChannel(null)
+    setShowRenameChannel(false)
+  }
 
   const openRemoveChannel = (channel) => {
-    setSelectedChannel(channel);
-    setShowRemoveChannel(true);
-  };
+    setSelectedChannel(channel)
+    setShowRemoveChannel(true)
+  }
   const closeRemoveChannel = () => {
-    setSelectedChannel(null);
-    setShowRemoveChannel(false);
-  };
+    setSelectedChannel(null)
+    setShowRemoveChannel(false)
+  }
 
   const validateChannelName = (name, currentId = null) => {
     const existing = channels.find(
-      (c) => c.name === name && (currentId === null || c.id !== currentId)
-    );
-    return !existing;
-  };
+      (c) => c.name === name && (currentId === null || c.id !== currentId),
+    )
+    return !existing
+  }
 
   if (loading) {
     return (
@@ -624,7 +623,7 @@ const ChatPage = () => {
           <span className="visually-hidden">{t('loading')}</span>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -733,9 +732,7 @@ const ChatPage = () => {
             <div className="d-flex flex-column h-100">
               <div className="bg-light mb-4 p-3 shadow-sm small">
                 <p className="m-0">
-                  <b>
-                    # {currentChannel?.name}
-                  </b>
+                  <b># {currentChannel?.name}</b>
                 </p>
                 <span className="text-muted">
                   {filteredMessages.length} сообщений
@@ -815,18 +812,18 @@ const ChatPage = () => {
               .max(20, t('validation.channelNameLength'))
               .required(t('validation.required'))
               .test('unique', t('validation.channelNameUnique'), (value) =>
-                validateChannelName(value)
+                validateChannelName(value),
               ),
           })}
           onSubmit={async (values, { setSubmitting }) => {
             try {
-              await dispatch(createChannel(values.name)).unwrap();
-              toast.success(t('toast.channelCreated'));
-              closeAddChannel();
+              await dispatch(createChannel(values.name)).unwrap()
+              toast.success(t('toast.channelCreated'))
+              closeAddChannel()
             } catch {
-              toast.error(t('toast.error'));
+              toast.error(t('toast.error'))
             } finally {
-              setSubmitting(false);
+              setSubmitting(false)
             }
           }}
         >
@@ -864,11 +861,7 @@ const ChatPage = () => {
                 <Button variant="secondary" onClick={closeAddChannel}>
                   {t('cancel')}
                 </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isSubmitting}
-                >
+                <Button type="submit" variant="primary" disabled={isSubmitting}>
                   {isSubmitting ? t('loading') : t('add')}
                 </Button>
               </Modal.Footer>
@@ -890,23 +883,21 @@ const ChatPage = () => {
                 .min(3, t('validation.channelNameLength'))
                 .max(20, t('validation.channelNameLength'))
                 .required(t('validation.required'))
-                .test(
-                  'unique',
-                  t('validation.channelNameUnique'),
-                  (value) => validateChannelName(value, selectedChannel.id)
+                .test('unique', t('validation.channelNameUnique'), (value) =>
+                  validateChannelName(value, selectedChannel.id),
                 ),
             })}
             onSubmit={async (values, { setSubmitting }) => {
               try {
                 await dispatch(
-                  renameChannel({ id: selectedChannel.id, name: values.name })
-                ).unwrap();
-                toast.success(t('toast.channelRenamed'));
-                closeRenameChannel();
+                  renameChannel({ id: selectedChannel.id, name: values.name }),
+                ).unwrap()
+                toast.success(t('toast.channelRenamed'))
+                closeRenameChannel()
               } catch {
-                toast.error(t('toast.error'));
+                toast.error(t('toast.error'))
               } finally {
-                setSubmitting(false);
+                setSubmitting(false)
               }
             }}
           >
@@ -974,11 +965,11 @@ const ChatPage = () => {
             variant="danger"
             onClick={async () => {
               try {
-                await dispatch(removeChannel(selectedChannel.id)).unwrap();
-                toast.success(t('toast.channelRemoved'));
-                closeRemoveChannel();
+                await dispatch(removeChannel(selectedChannel.id)).unwrap()
+                toast.success(t('toast.channelRemoved'))
+                closeRemoveChannel()
               } catch {
-                toast.error(t('toast.error'));
+                toast.error(t('toast.error'))
               }
             }}
           >
@@ -987,7 +978,7 @@ const ChatPage = () => {
         </Modal.Footer>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default ChatPage;
+export default ChatPage
