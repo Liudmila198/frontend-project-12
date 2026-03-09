@@ -516,37 +516,39 @@ import { Modal, Button } from 'react-bootstrap';
 import {
   fetchInitialData,
   setCurrentChannel,
+  sendMessage,
+  createChannel,
+  renameChannel,
+  removeChannel,
 } from '../slices/chatSlice';
 import { logout } from '../slices/authSlice';
 import Header from '../components/Header';
-import { useSocket } from '../sockets/SocketContext';
+import { useSocket } from '../sockets/SocketContext'; // контекст нужен только для подключения, методы не вызываем
 
 const ChatPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const socket = useSocket();
+  const socket = useSocket(); // обеспечивает подключение сокета, но методы не используем
 
-  const { channels, messages, currentChannelId, loading, error } = useSelector(
+  const { channels, messages, currentChannelId, loading, error, sending } = useSelector(
     (state) => state.chat
   );
   const token = useSelector((state) => state.auth.token);
   const username = useSelector((state) => state.auth.username);
 
-  const [isSending, setIsSending] = useState(false);
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [showRenameChannel, setShowRenameChannel] = useState(false);
   const [showRemoveChannel, setShowRemoveChannel] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(null);
 
-  // Загрузка начальных данных (HTTP) и выбор первого канала
+  // Загрузка начальных данных и выбор первого канала
   useEffect(() => {
     if (!token) return;
 
     if (channels.length === 0) {
       dispatch(fetchInitialData());
     } else if (!currentChannelId && channels.length > 0) {
-      // Если каналы уже загружены, но текущий не выбран — выбираем первый
       dispatch(setCurrentChannel(channels[0].id));
     }
   }, [dispatch, token, channels.length, currentChannelId, channels]);
@@ -573,18 +575,17 @@ const ChatPage = () => {
   const handleSubmitMessage = async (values, { resetForm }) => {
     if (!currentChannelId) return;
 
-    setIsSending(true);
     try {
-      await socket.sendMessage({
-        text: values.message,
-        channelId: currentChannelId,
-        username,
-      });
+      await dispatch(
+        sendMessage({
+          text: values.message,
+          channelId: currentChannelId,
+          username,
+        })
+      ).unwrap();
       resetForm();
     } catch {
       toast.error(t('toast.messageError'));
-    } finally {
-      setIsSending(false);
     }
   };
 
@@ -769,12 +770,12 @@ const ChatPage = () => {
                           name="message"
                           className="border-0 p-0 ps-2 form-control"
                           placeholder={t('chat.typeMessage')}
-                          disabled={isSubmitting || isSending}
+                          disabled={isSubmitting || sending}
                           aria-label="Новое сообщение"
                         />
                         <button
                           type="submit"
-                          disabled={isSubmitting || isSending}
+                          disabled={isSubmitting || sending}
                           className="btn btn-group-vertical"
                         >
                           <svg
@@ -819,7 +820,7 @@ const ChatPage = () => {
           })}
           onSubmit={async (values, { setSubmitting }) => {
             try {
-              await socket.createChannel(values.name);
+              await dispatch(createChannel(values.name)).unwrap();
               toast.success(t('toast.channelCreated'));
               closeAddChannel();
             } catch {
@@ -897,7 +898,9 @@ const ChatPage = () => {
             })}
             onSubmit={async (values, { setSubmitting }) => {
               try {
-                await socket.renameChannel(selectedChannel.id, values.name);
+                await dispatch(
+                  renameChannel({ id: selectedChannel.id, name: values.name })
+                ).unwrap();
                 toast.success(t('toast.channelRenamed'));
                 closeRenameChannel();
               } catch {
@@ -971,7 +974,7 @@ const ChatPage = () => {
             variant="danger"
             onClick={async () => {
               try {
-                await socket.removeChannel(selectedChannel.id);
+                await dispatch(removeChannel(selectedChannel.id)).unwrap();
                 toast.success(t('toast.channelRemoved'));
                 closeRemoveChannel();
               } catch {
