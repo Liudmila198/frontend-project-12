@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import socketManager from './index'; // ваш существующий менеджер сокетов
+import socketManager from './index';
 import { addMessage, addChannel, removeChannelAction, renameChannelAction } from '../slices/chatSlice';
 
 const SocketContext = createContext(null);
@@ -18,7 +18,6 @@ export const SocketProvider = ({ children }) => {
   const token = useSelector((state) => state.auth.token);
   const socketRef = useRef(null);
 
-  // Подключение и обработчики событий
   useEffect(() => {
     if (!token) {
       if (socketRef.current) {
@@ -28,11 +27,9 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    // Подключаемся и сохраняем сокет
     const socket = socketManager.connect(token);
     socketRef.current = socket;
 
-    // Обработчики событий от сервера
     socket.on('newMessage', (message) => {
       dispatch(addMessage(message));
     });
@@ -49,28 +46,28 @@ export const SocketProvider = ({ children }) => {
       dispatch(renameChannelAction(channel));
     });
 
-    // Обработка ошибок (опционально)
     socket.on('connect_error', (err) => {
       console.error('Socket connection error:', err);
     });
 
     return () => {
-      // Отключаемся при размонтировании или смене токена
       socketManager.disconnect();
       socketRef.current = null;
     };
   }, [token, dispatch]);
 
-  // API для отправки команд (возвращают Promise)
   const sendMessage = (data) => {
     return new Promise((resolve, reject) => {
       if (!socketRef.current) {
         reject(new Error('Socket not connected'));
         return;
       }
-      // Предполагаем, что socketManager.emit умеет принимать callback
       socketRef.current.emit('newMessage', data, (response) => {
         if (response && response.status === 'ok') {
+          // Добавляем сообщение в Redux, если сервер не присылает событие newMessage
+          if (response.message) {
+            dispatch(addMessage(response.message));
+          }
           resolve(response);
         } else {
           reject(response?.error || new Error('Failed to send message'));
@@ -140,3 +137,4 @@ export const SocketProvider = ({ children }) => {
     </SocketContext.Provider>
   );
 };
+
