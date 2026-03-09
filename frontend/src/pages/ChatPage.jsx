@@ -533,21 +533,23 @@ const ChatPage = () => {
   const token = useSelector((state) => state.auth.token);
   const username = useSelector((state) => state.auth.username);
 
-  // Локальное состояние для индикации отправки сообщения
   const [isSending, setIsSending] = useState(false);
-
   const [showAddChannel, setShowAddChannel] = useState(false);
   const [showRenameChannel, setShowRenameChannel] = useState(false);
   const [showRemoveChannel, setShowRemoveChannel] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState(null);
 
-  // Загрузка начальных данных (HTTP)
+  // Загрузка начальных данных (HTTP) и выбор первого канала
   useEffect(() => {
     if (!token) return;
+
     if (channels.length === 0) {
       dispatch(fetchInitialData());
+    } else if (!currentChannelId && channels.length > 0) {
+      // Если каналы уже загружены, но текущий не выбран — выбираем первый
+      dispatch(setCurrentChannel(channels[0].id));
     }
-  }, [dispatch, token, channels.length]);
+  }, [dispatch, token, channels.length, currentChannelId, channels]);
 
   // Обработка ошибок (например, 401)
   useEffect(() => {
