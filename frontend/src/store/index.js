@@ -1,10 +1,24 @@
+// import { configureStore } from '@reduxjs/toolkit'
+// import authReducer from '../slices/authSlice'
+// import chatReducer from '../slices/chatSlice'
+
+// export default configureStore({
+//   reducer: {
+//     auth: authReducer,
+//     chat: chatReducer,
+//   },
+// })
+
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '../slices/authSlice'
-import chatReducer from '../slices/chatSlice'
+import chatReducer from '../slices/chatSlice' // если есть
 
-export default configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     chat: chatReducer,
+    // другие редьюсеры
   },
 })
+
+export default store
