@@ -496,13 +496,13 @@ import {
 } from '../slices/chatSlice'
 import { logout } from '../slices/authSlice'
 import Header from '../components/Header'
-import { useSocket } from '../sockets/SocketContext'
+//import { useSocket } from '../sockets/SocketContext'
 
 const ChatPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const socket = useSocket()
+  //const socket = useSocket()
 
   const { channels, messages, currentChannelId, loading, error, sending } =
     useSelector((state) => state.chat)

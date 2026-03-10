@@ -10,13 +10,13 @@ import {
 
 const SocketContext = createContext(null)
 
-export const useSocket = () => {
-  const context = useContext(SocketContext)
-  if (!context) {
-    throw new Error('useSocket must be used within SocketProvider')
-  }
-  return context
-}
+// export const useSocket = () => {
+//   const context = useContext(SocketContext)
+//   if (!context) {
+//     throw new Error('useSocket must be used within SocketProvider')
+//   }
+//   return context
+// }
 
 export const SocketProvider = ({ children }) => {
   const dispatch = useDispatch()
