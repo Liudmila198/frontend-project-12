@@ -1,17 +1,15 @@
-import axios from 'axios'
-import store from '../store' // теперь файл существует
+import axios from 'axios';
 
 const instance = axios.create({
   baseURL: '',
-})
+});
 
 instance.interceptors.request.use((config) => {
-  const state = store.getState()
-  const token = state.auth.token
+  const token = localStorage.getItem('token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
-export default instance
+export default instance;
