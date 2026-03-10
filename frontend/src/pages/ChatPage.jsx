@@ -11,75 +11,47 @@
 //   fetchInitialData,
 //   setCurrentChannel,
 //   sendMessage,
-//   addMessage,
-//   addChannel,
-//   removeChannelAction,
-//   renameChannelAction,
 //   createChannel,
 //   renameChannel,
 //   removeChannel,
 // } from '../slices/chatSlice'
 // import { logout } from '../slices/authSlice'
-// import socketManager from '../sockets'
 // import Header from '../components/Header'
+// import { useSocket } from '../sockets/SocketContext' // контекст нужен только для подключения, методы не вызываем
 
 // const ChatPage = () => {
 //   const dispatch = useDispatch()
 //   const navigate = useNavigate()
 //   const { t } = useTranslation()
+//   const socket = useSocket() // обеспечивает подключение сокета, но методы не используем
 
-//   const { channels, messages, currentChannelId, loading, error, sending }
-//     = useSelector(state => state.chat)
-//   const token = useSelector(state => state.auth.token)
-//   const username = useSelector(state => state.auth.username)
+//   const { channels, messages, currentChannelId, loading, error, sending } =
+//     useSelector((state) => state.chat)
+//   const token = useSelector((state) => state.auth.token)
+//   const username = useSelector((state) => state.auth.username)
 
 //   const [showAddChannel, setShowAddChannel] = useState(false)
 //   const [showRenameChannel, setShowRenameChannel] = useState(false)
 //   const [showRemoveChannel, setShowRemoveChannel] = useState(false)
 //   const [selectedChannel, setSelectedChannel] = useState(null)
 
-//   useEffect(() => {
-//     if (!token) {
-//       navigate('/login')
-//       return
-//     }
-
-//     const socket = socketManager.connect(token)
-
-//     socket.on('newMessage', (message) => {
-//       dispatch(addMessage(message))
-//     })
-
-//     socket.on('newChannel', (channel) => {
-//       dispatch(addChannel(channel))
-//     })
-
-//     socket.on('removeChannel', (channel) => {
-//       dispatch(removeChannelAction(channel.id))
-//     })
-
-//     socket.on('renameChannel', (channel) => {
-//       dispatch(renameChannelAction(channel))
-//     })
-
-//     return () => {
-//       socketManager.disconnect()
-//     }
-//   }, [token, dispatch, navigate])
-
+//   // Загрузка начальных данных и выбор первого канала
 //   useEffect(() => {
 //     if (!token) return
+
 //     if (channels.length === 0) {
 //       dispatch(fetchInitialData())
+//     } else if (!currentChannelId && channels.length > 0) {
+//       dispatch(setCurrentChannel(channels[0].id))
 //     }
-//   }, [dispatch, token, channels.length])
+//   }, [dispatch, token, channels.length, currentChannelId, channels])
 
+//   // Обработка ошибок (например, 401)
 //   useEffect(() => {
 //     if (error && error.status === 401) {
 //       dispatch(logout())
 //       navigate('/login')
-//     }
-//     else if (error) {
+//     } else if (error) {
 //       toast.error(t('toast.loadingError'))
 //     }
 //   }, [error, dispatch, navigate, t])
@@ -88,16 +60,14 @@
 //     dispatch(setCurrentChannel(channelId))
 //   }
 
-//   const currentChannel = channels.find(c => c.id === currentChannelId)
-
+//   const currentChannel = channels.find((c) => c.id === currentChannelId)
 //   const filteredMessages = messages.filter(
-//     msg => msg.channelId === currentChannelId,
+//     (msg) => msg.channelId === currentChannelId,
 //   )
 
 //   const handleSubmitMessage = async (values, { resetForm }) => {
-//     if (!currentChannelId) {
-//       return
-//     }
+//     if (!currentChannelId) return
+
 //     try {
 //       await dispatch(
 //         sendMessage({
@@ -107,8 +77,7 @@
 //         }),
 //       ).unwrap()
 //       resetForm()
-//     }
-//     catch {
+//     } catch {
 //       toast.error(t('toast.messageError'))
 //     }
 //   }
@@ -136,7 +105,7 @@
 
 //   const validateChannelName = (name, currentId = null) => {
 //     const existing = channels.find(
-//       c => c.name === name && (currentId === null || c.id !== currentId),
+//       (c) => c.name === name && (currentId === null || c.id !== currentId),
 //     )
 //     return !existing
 //   }
@@ -182,61 +151,71 @@
 //               id="channels-box"
 //               className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
 //             >
-//               {channels.map(channel => (
+//               {channels.map((channel) => (
 //                 <li key={channel.id} className="nav-item w-100">
-//                   {channel.removable === false
-//                     ? (
-//                         <button
-//                           type="button"
-//                           className={`w-100 rounded-1 text-start btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
-//                           onClick={() => handleChannelSelect(channel.id)}
-//                         >
-//                           <span className="me-1">#</span>
-//                           {channel.name}
-//                         </button>
-//                       )
-//                     : (
-//                         <div className="d-flex dropdown btn-group">
+//                   {channel.removable === false ? (
+//                     <button
+//                       type="button"
+//                       className={`w-100 rounded-1 text-start btn ${
+//                         currentChannelId === channel.id
+//                           ? 'btn-secondary'
+//                           : 'btn-light'
+//                       }`}
+//                       onClick={() => handleChannelSelect(channel.id)}
+//                     >
+//                       <span className="me-1">#</span>
+//                       {channel.name}
+//                     </button>
+//                   ) : (
+//                     <div className="d-flex dropdown btn-group">
+//                       <button
+//                         type="button"
+//                         className={`w-100 rounded-1 text-start text-truncate btn ${
+//                           currentChannelId === channel.id
+//                             ? 'btn-secondary'
+//                             : 'btn-light'
+//                         }`}
+//                         onClick={() => handleChannelSelect(channel.id)}
+//                       >
+//                         <span className="me-1">#</span>
+//                         {channel.name}
+//                       </button>
+//                       <button
+//                         type="button"
+//                         className={`flex-grow-0 dropdown-toggle dropdown-toggle-split btn ${
+//                           currentChannelId === channel.id
+//                             ? 'btn-secondary'
+//                             : 'btn-light'
+//                         }`}
+//                         data-bs-toggle="dropdown"
+//                         aria-expanded="false"
+//                       >
+//                         <span className="visually-hidden">
+//                           {t('channel.actions')}
+//                         </span>
+//                       </button>
+//                       <ul className="dropdown-menu">
+//                         <li>
 //                           <button
 //                             type="button"
-//                             className={`w-100 rounded-1 text-start text-truncate btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
-//                             onClick={() => handleChannelSelect(channel.id)}
+//                             className="dropdown-item"
+//                             onClick={() => openRenameChannel(channel)}
 //                           >
-//                             <span className="me-1">#</span>
-//                             {channel.name}
+//                             {t('channel.rename')}
 //                           </button>
+//                         </li>
+//                         <li>
 //                           <button
 //                             type="button"
-//                             className={`flex-grow-0 dropdown-toggle dropdown-toggle-split btn ${currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'}`}
-//                             data-bs-toggle="dropdown"
-//                             aria-expanded="false"
+//                             className="dropdown-item text-danger"
+//                             onClick={() => openRemoveChannel(channel)}
 //                           >
-//                             <span className="visually-hidden">
-//                               {t('channel.actions')}
-//                             </span>
+//                             {t('channel.remove')}
 //                           </button>
-//                           <ul className="dropdown-menu">
-//                             <li>
-//                               <button
-//                                 type="button"
-//                                 className="dropdown-item"
-//                                 onClick={() => openRenameChannel(channel)}
-//                               >
-//                                 {t('channel.rename')}
-//                               </button>
-//                             </li>
-//                             <li>
-//                               <button
-//                                 type="button"
-//                                 className="dropdown-item text-danger"
-//                                 onClick={() => openRemoveChannel(channel)}
-//                               >
-//                                 {t('channel.remove')}
-//                               </button>
-//                             </li>
-//                           </ul>
-//                         </div>
-//                       )}
+//                         </li>
+//                       </ul>
+//                     </div>
+//                   )}
 //                 </li>
 //               ))}
 //             </ul>
@@ -247,16 +226,10 @@
 //             <div className="d-flex flex-column h-100">
 //               <div className="bg-light mb-4 p-3 shadow-sm small">
 //                 <p className="m-0">
-//                   <b>
-//                     #
-//                     {' '}
-//                     {currentChannel?.name}
-//                   </b>
+//                   <b># {currentChannel?.name}</b>
 //                 </p>
 //                 <span className="text-muted">
-//                   {filteredMessages.length}
-//                   {' '}
-//                   сообщений
+//                   {filteredMessages.length} сообщений
 //                 </span>
 //               </div>
 
@@ -264,7 +237,7 @@
 //                 id="messages-box"
 //                 className="chat-messages overflow-auto px-5"
 //               >
-//                 {filteredMessages.map(msg => (
+//                 {filteredMessages.map((msg) => (
 //                   <div key={msg.id} className="text-break mb-2">
 //                     <b>{msg.username}</b>
 //                     {': '}
@@ -288,7 +261,7 @@
 //                           name="message"
 //                           className="border-0 p-0 ps-2 form-control"
 //                           placeholder={t('chat.typeMessage')}
-//                           disabled={sending}
+//                           disabled={isSubmitting || sending}
 //                           aria-label="Новое сообщение"
 //                         />
 //                         <button
@@ -332,7 +305,7 @@
 //               .min(3, t('validation.channelNameLength'))
 //               .max(20, t('validation.channelNameLength'))
 //               .required(t('validation.required'))
-//               .test('unique', t('validation.channelNameUnique'), value =>
+//               .test('unique', t('validation.channelNameUnique'), (value) =>
 //                 validateChannelName(value),
 //               ),
 //           })}
@@ -341,11 +314,9 @@
 //               await dispatch(createChannel(values.name)).unwrap()
 //               toast.success(t('toast.channelCreated'))
 //               closeAddChannel()
-//             }
-//             catch {
+//             } catch {
 //               toast.error(t('toast.error'))
-//             }
-//             finally {
+//             } finally {
 //               setSubmitting(false)
 //             }
 //           }}
@@ -364,7 +335,9 @@
 //                   <input
 //                     id="channel-name-input"
 //                     name="name"
-//                     className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
+//                     className={`form-control ${
+//                       touched.name && errors.name ? 'is-invalid' : ''
+//                     }`}
 //                     placeholder={t('channel.name')}
 //                     value={values.name}
 //                     onChange={handleChange}
@@ -404,7 +377,7 @@
 //                 .min(3, t('validation.channelNameLength'))
 //                 .max(20, t('validation.channelNameLength'))
 //                 .required(t('validation.required'))
-//                 .test('unique', t('validation.channelNameUnique'), value =>
+//                 .test('unique', t('validation.channelNameUnique'), (value) =>
 //                   validateChannelName(value, selectedChannel.id),
 //                 ),
 //             })}
@@ -415,11 +388,9 @@
 //                 ).unwrap()
 //                 toast.success(t('toast.channelRenamed'))
 //                 closeRenameChannel()
-//               }
-//               catch {
+//               } catch {
 //                 toast.error(t('toast.error'))
-//               }
-//               finally {
+//               } finally {
 //                 setSubmitting(false)
 //               }
 //             }}
@@ -438,7 +409,9 @@
 //                     <input
 //                       id="rename-channel-input"
 //                       name="name"
-//                       className={`form-control ${touched.name && errors.name ? 'is-invalid' : ''}`}
+//                       className={`form-control ${
+//                         touched.name && errors.name ? 'is-invalid' : ''
+//                       }`}
 //                       placeholder={t('channel.name')}
 //                       value={values.name}
 //                       onChange={handleChange}
@@ -489,8 +462,7 @@
 //                 await dispatch(removeChannel(selectedChannel.id)).unwrap()
 //                 toast.success(t('toast.channelRemoved'))
 //                 closeRemoveChannel()
-//               }
-//               catch {
+//               } catch {
 //                 toast.error(t('toast.error'))
 //               }
 //             }}
@@ -504,6 +476,7 @@
 // }
 
 // export default ChatPage
+
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -523,13 +496,13 @@ import {
 } from '../slices/chatSlice'
 import { logout } from '../slices/authSlice'
 import Header from '../components/Header'
-import { useSocket } from '../sockets/SocketContext' // контекст нужен только для подключения, методы не вызываем
+import { useSocket } from '../sockets/SocketContext'
 
 const ChatPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const socket = useSocket() // обеспечивает подключение сокета, но методы не используем
+  const socket = useSocket()
 
   const { channels, messages, currentChannelId, loading, error, sending } =
     useSelector((state) => state.chat)
@@ -541,7 +514,6 @@ const ChatPage = () => {
   const [showRemoveChannel, setShowRemoveChannel] = useState(false)
   const [selectedChannel, setSelectedChannel] = useState(null)
 
-  // Загрузка начальных данных и выбор первого канала
   useEffect(() => {
     if (!token) return
 
@@ -552,7 +524,6 @@ const ChatPage = () => {
     }
   }, [dispatch, token, channels.length, currentChannelId, channels])
 
-  // Обработка ошибок (например, 401)
   useEffect(() => {
     if (error && error.status === 401) {
       dispatch(logout())
@@ -735,7 +706,8 @@ const ChatPage = () => {
                   <b># {currentChannel?.name}</b>
                 </p>
                 <span className="text-muted">
-                  {filteredMessages.length} сообщений
+                  {/* ИСПОЛЬЗОВАНА ПЛЮРАЛИЗАЦИЯ */}
+                  {t('chat.messagesCount', { count: filteredMessages.length })}
                 </span>
               </div>
 
@@ -799,7 +771,7 @@ const ChatPage = () => {
         </div>
       </div>
 
-      {/* Модальное окно добавления канала */}
+      {/* Модальные окна (без изменений) */}
       <Modal show={showAddChannel} onHide={closeAddChannel}>
         <Modal.Header closeButton>
           <Modal.Title>{t('modal.addChannel')}</Modal.Title>
@@ -870,7 +842,6 @@ const ChatPage = () => {
         </Formik>
       </Modal>
 
-      {/* Модальное окно переименования канала */}
       <Modal show={showRenameChannel} onHide={closeRenameChannel}>
         <Modal.Header closeButton>
           <Modal.Title>{t('modal.renameChannel')}</Modal.Title>
@@ -949,7 +920,6 @@ const ChatPage = () => {
         )}
       </Modal>
 
-      {/* Модальное окно удаления канала */}
       <Modal show={showRemoveChannel} onHide={closeRemoveChannel}>
         <Modal.Header closeButton>
           <Modal.Title>{t('modal.removeChannel')}</Modal.Title>

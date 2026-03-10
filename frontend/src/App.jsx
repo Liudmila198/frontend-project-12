@@ -1,32 +1,38 @@
 // import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 // import { useSelector } from 'react-redux'
+// import { AuthProvider } from './contexts/AuthContext'
+// import { SocketProvider } from './sockets/SocketContext' // если есть
 // import LoginPage from './pages/LoginPage'
 // import SignupPage from './pages/SignupPage'
 // import ChatPage from './pages/ChatPage'
 // import NotFoundPage from './pages/NotFoundPage'
 
 // const PrivateRoute = ({ children }) => {
-//   const token = useSelector(state => state.auth.token)
+//   const token = useSelector((state) => state.auth.token)
 //   return token ? children : <Navigate to="/login" />
 // }
 
 // const App = () => {
 //   return (
-//     <BrowserRouter>
-//       <Routes>
-//         <Route path="/login" element={<LoginPage />} />
-//         <Route path="/signup" element={<SignupPage />} />
-//         <Route
-//           path="/"
-//           element={(
-//             <PrivateRoute>
-//               <ChatPage />
-//             </PrivateRoute>
-//           )}
-//         />
-//         <Route path="*" element={<NotFoundPage />} />
-//       </Routes>
-//     </BrowserRouter>
+//     <AuthProvider>
+//       <SocketProvider> {/* опционально */}
+//         <BrowserRouter>
+//           <Routes>
+//             <Route path="/login" element={<LoginPage />} />
+//             <Route path="/signup" element={<SignupPage />} />
+//             <Route
+//               path="/"
+//               element={
+//                 <PrivateRoute>
+//                   <ChatPage />
+//                 </PrivateRoute>
+//               }
+//             />
+//             <Route path="*" element={<NotFoundPage />} />
+//           </Routes>
+//         </BrowserRouter>
+//       </SocketProvider>
+//     </AuthProvider>
 //   )
 // }
 
@@ -34,8 +40,11 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { I18nextProvider } from 'react-i18next'
+import { useEffect, useState } from 'react'
+import i18n, { initPromise } from './i18n'
 import { AuthProvider } from './contexts/AuthContext'
-import { SocketProvider } from './sockets/SocketContext' // если есть
+import { SocketProvider } from './sockets/SocketContext'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ChatPage from './pages/ChatPage'
@@ -47,26 +56,38 @@ const PrivateRoute = ({ children }) => {
 }
 
 const App = () => {
+  const [i18nReady, setI18nReady] = useState(false)
+
+  useEffect(() => {
+    initPromise.then(() => setI18nReady(true))
+  }, [])
+
+  if (!i18nReady) {
+    return <div>Loading...</div>
+  }
+
   return (
-    <AuthProvider>
-      <SocketProvider> {/* опционально */}
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <ChatPage />
-                </PrivateRoute>
-              }
-            />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </BrowserRouter>
-      </SocketProvider>
-    </AuthProvider>
+    <I18nextProvider i18n={i18n}>
+      <AuthProvider>
+        <SocketProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <ChatPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </BrowserRouter>
+        </SocketProvider>
+      </AuthProvider>
+    </I18nextProvider>
   )
 }
 
