@@ -18,3 +18,6 @@ prettier:
 
 lint:
 	cd frontend && npx eslint src
+
+lint-fix:
+	npx eslint --fix "src/**/*.{js,jsx}"

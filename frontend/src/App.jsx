@@ -34,7 +34,8 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { SocketProvider } from './sockets/SocketContext' // импортируем провайдер
+import { AuthProvider } from './contexts/AuthContext'
+import { SocketProvider } from './sockets/SocketContext' // если есть
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ChatPage from './pages/ChatPage'
@@ -47,25 +48,25 @@ const PrivateRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <SocketProvider>
-      {' '}
-      {/* Оборачиваем роутер, чтобы контекст был доступен во всех страницах */}
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <ChatPage />
-              </PrivateRoute>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
-    </SocketProvider>
+    <AuthProvider>
+      <SocketProvider> {/* опционально */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <ChatPage />
+                </PrivateRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </SocketProvider>
+    </AuthProvider>
   )
 }
 
