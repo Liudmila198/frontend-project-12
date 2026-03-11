@@ -4,6 +4,7 @@ import * as Yup from 'yup'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import Header from '../components/Header'
+import { ROUTES } from '../constants/routes'
 
 const SignupPage = () => {
   const { t } = useTranslation()
@@ -34,7 +35,7 @@ const SignupPage = () => {
 
   // Единственный источник навигации — после всех хуков.
   if (isAuthenticated) {
-    return <Navigate to="/" replace />
+    return <Navigate to={ROUTES.HOME} replace />
   }
 
   return (
@@ -132,7 +133,7 @@ const SignupPage = () => {
               <div className="card-footer p-4">
                 <div className="text-center">
                   <span>{t('signup.alreadyHaveAccount')}</span>{' '}
-                  <Link to="/login">{t('signup.loginLink')}</Link>
+                  <Link to={ROUTES.LOGIN}>{t('signup.loginLink')}</Link>
                 </div>
               </div>
             </div>

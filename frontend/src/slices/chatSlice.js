@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../api'
 import { filterProfanity } from '../utils/profanity'
+import { API } from '../constants/api'
 
 export const fetchInitialData = createAsyncThunk(
   'chat/fetchInitialData',
   async (_, { rejectWithValue }) => {
     try {
       const [channelsRes, messagesRes] = await Promise.all([
-        api.get('/api/v1/channels'),
-        api.get('/api/v1/messages'),
+        api.get(API.CHANNELS),
+        api.get(API.MESSAGES),
       ])
       return { channels: channelsRes.data, messages: messagesRes.data }
     } catch (err) {
@@ -24,7 +25,7 @@ export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
   async ({ text, channelId, username }, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/v1/messages', {
+      const response = await api.post(API.MESSAGES, {
         text,
         channelId,
         username,
@@ -41,7 +42,7 @@ export const createChannel = createAsyncThunk(
   async (name, { rejectWithValue }) => {
     try {
       const cleanName = filterProfanity(name)
-      const response = await api.post('/api/v1/channels', { name: cleanName })
+      const response = await api.post(API.CHANNELS, { name: cleanName })
       return response.data
     } catch (err) {
       return rejectWithValue(err.response?.data)
@@ -54,9 +55,7 @@ export const renameChannel = createAsyncThunk(
   async ({ id, name }, { rejectWithValue }) => {
     try {
       const cleanName = filterProfanity(name)
-      const response = await api.patch(`/api/v1/channels/${id}`, {
-        name: cleanName,
-      })
+      const response = await api.patch(API.CHANNEL(id), { name: cleanName })
       return response.data
     } catch (err) {
       return rejectWithValue(err.response?.data)
@@ -68,7 +67,7 @@ export const removeChannel = createAsyncThunk(
   'chat/removeChannel',
   async (id, { rejectWithValue }) => {
     try {
-      await api.delete(`/api/v1/channels/${id}`)
+      await api.delete(API.CHANNEL(id))
       return id
     } catch (err) {
       return rejectWithValue(err.response?.data)

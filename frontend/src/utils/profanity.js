@@ -1,8 +1,8 @@
-import Filter from 'leo-profanity';
+import Filter from 'leo-profanity'
 
 // Загружаем необходимые словари
-Filter.loadDictionary('ru');
-Filter.loadDictionary('en');
+Filter.loadDictionary('ru')
+Filter.loadDictionary('en')
 
 // При необходимости можно добавить только уникальные слова, отсутствующие в словарях
 // Filter.add(['какое-то', 'специфичное', 'слово']);
@@ -13,8 +13,8 @@ Filter.loadDictionary('en');
  * @returns {string} - Текст с заменёнными нецензурными словами.
  */
 export const filterProfanity = (text) => {
-  return Filter.clean(text);
-};
+  return Filter.clean(text)
+}
 
 /**
  * Проверяет наличие нецензурных слов в тексте.
@@ -22,5 +22,5 @@ export const filterProfanity = (text) => {
  * @returns {boolean} - true, если найдены нецензурные слова.
  */
 export const hasProfanity = (text) => {
-  return Filter.check(text);
-};
+  return Filter.check(text)
+}

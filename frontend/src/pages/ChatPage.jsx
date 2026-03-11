@@ -10,6 +10,7 @@ import Header from '../components/Header'
 import ChannelList from '../components/ChannelList'
 import MessageArea from '../components/MessageArea'
 import ChannelModal from '../components/ChannelModal'
+import { ROUTES } from '../constants/routes'
 
 const ChatPage = () => {
   const dispatch = useDispatch()
@@ -33,7 +34,7 @@ const ChatPage = () => {
   useEffect(() => {
     if (error?.status === 401) {
       dispatch(logout())
-      navigate('/login')
+      navigate(ROUTES.LOGIN)
     } else if (error) {
       toast.error(t('toast.loadingError'))
     }

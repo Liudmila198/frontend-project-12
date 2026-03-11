@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { I18nextProvider } from 'react-i18next'
 import { useEffect, useState } from 'react'
@@ -9,7 +9,7 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ChatPage from './pages/ChatPage'
 import NotFoundPage from './pages/NotFoundPage'
-import { ROUTES } from '../constants/routes'
+import { ROUTES } from './constants/routes'
 
 const PrivateRoute = ({ children }) => {
   const token = useSelector((state) => state.auth.token)
@@ -33,10 +33,10 @@ const App = () => {
         <SocketProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+              <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+              <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
               <Route
-                path="/"
+                path={ROUTES.HOME}
                 element={
                   <PrivateRoute>
                     <ChatPage />
