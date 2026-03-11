@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, Navigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useTranslation } from 'react-i18next'
@@ -11,12 +10,7 @@ const SignupPage = () => {
   const { t } = useTranslation()
   const { register, isAuthenticated, loading, registerError, clearRegisterError } = useAuth()
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/')
-    }
-  }, [isAuthenticated, navigate])
-
+  // Все хуки должны быть объявлены до любого return
   const formik = useFormik({
     initialValues: { username: '', password: '', confirmPassword: '' },
     validationSchema: Yup.object({
@@ -39,6 +33,11 @@ const SignupPage = () => {
       }
     },
   })
+
+  // Ранний return — только после всех хуков
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
 
   return (
     <div className="d-flex flex-column h-100">
@@ -110,7 +109,9 @@ const SignupPage = () => {
                       type="password"
                       id="confirm-password"
                       className={`form-control ${
-                        formik.touched.confirmPassword && formik.errors.confirmPassword ? 'is-invalid' : ''
+                        formik.touched.confirmPassword && formik.errors.confirmPassword
+                          ? 'is-invalid'
+                          : ''
                       }`}
                       value={formik.values.confirmPassword}
                       onChange={formik.handleChange}

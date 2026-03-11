@@ -1,5 +1,4 @@
-import { useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, Navigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useTranslation } from 'react-i18next'
@@ -10,12 +9,6 @@ const LoginPage = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { login, isAuthenticated, loading, loginError, clearLoginError } = useAuth()
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/')
-    }
-  }, [isAuthenticated, navigate])
 
   const formik = useFormik({
     initialValues: { username: '', password: '' },
@@ -31,6 +24,10 @@ const LoginPage = () => {
       }
     },
   })
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />
+  }
 
   return (
     <div className="d-flex flex-column h-100">
