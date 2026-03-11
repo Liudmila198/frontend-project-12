@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { I18nextProvider } from 'react-i18next'
 import { useEffect, useState } from 'react'
@@ -9,10 +9,11 @@ import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import ChatPage from './pages/ChatPage'
 import NotFoundPage from './pages/NotFoundPage'
+import { ROUTES } from '../constants/routes'
 
 const PrivateRoute = ({ children }) => {
   const token = useSelector((state) => state.auth.token)
-  return token ? children : <Navigate to="/login" />
+  return token ? children : <Navigate to={ROUTES.LOGIN} />
 }
 
 const App = () => {
