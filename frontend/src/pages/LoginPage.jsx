@@ -1,4 +1,4 @@
-import { useNavigate, Link, Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useTranslation } from 'react-i18next'
@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext'
 import Header from '../components/Header'
 
 const LoginPage = () => {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const { login, isAuthenticated, loading, loginError, clearLoginError } = useAuth()
 
@@ -18,10 +17,7 @@ const LoginPage = () => {
     }),
     onSubmit: async (values) => {
       if (clearLoginError) clearLoginError()
-      const result = await login(values)
-      if (result.success) {
-        navigate('/')
-      }
+      await login(values)
     },
   })
 

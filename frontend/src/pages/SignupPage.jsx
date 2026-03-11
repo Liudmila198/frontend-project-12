@@ -1,4 +1,4 @@
-import { useNavigate, Link, Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useTranslation } from 'react-i18next'
@@ -6,11 +6,9 @@ import { useAuth } from '../contexts/AuthContext'
 import Header from '../components/Header'
 
 const SignupPage = () => {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const { register, isAuthenticated, loading, registerError, clearRegisterError } = useAuth()
 
-  // Все хуки должны быть объявлены до любого return
   const formik = useFormik({
     initialValues: { username: '', password: '', confirmPassword: '' },
     validationSchema: Yup.object({
@@ -27,14 +25,14 @@ const SignupPage = () => {
     }),
     onSubmit: async (values) => {
       if (clearRegisterError) clearRegisterError()
-      const result = await register(values)
-      if (result.success) {
-        navigate('/')
-      }
+      // navigate() не вызываем — редирект делает <Navigate> ниже,
+      // когда isAuthenticated станет true. Два вызова navigate подряд
+      // перемонтировали ChatPage и прерывали fetchInitialData.
+      await register(values)
     },
   })
 
-  // Ранний return — только после всех хуков
+  // Единственный источник навигации — после всех хуков.
   if (isAuthenticated) {
     return <Navigate to="/" replace />
   }
