@@ -71,7 +71,7 @@ const MessageArea = () => {
                     className="border-0 p-0 ps-2 form-control"
                     placeholder={t('chat.typeMessage')}
                     disabled={isSubmitting || sending}
-                    aria-label={t('chat.typeMessage')}
+                    aria-label="Новое сообщение"
                   />
                   <button
                     type="submit"
