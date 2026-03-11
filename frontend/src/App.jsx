@@ -12,7 +12,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import { ROUTES } from './constants/routes'
 
 const PrivateRoute = ({ children }) => {
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector(state => state.auth.token)
   return token ? children : <Navigate to={ROUTES.LOGIN} />
 }
 

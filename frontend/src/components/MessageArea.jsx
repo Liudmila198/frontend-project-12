@@ -11,12 +11,12 @@ const MessageArea = () => {
   const { t } = useTranslation()
 
   const { channels, messages, currentChannelId, sending } = useSelector(
-    (state) => state.chat,
+    state => state.chat,
   )
-  const username = useSelector((state) => state.auth.username)
+  const username = useSelector(state => state.auth.username)
 
-  const currentChannel = channels.find((c) => c.id === currentChannelId)
-  const filteredMessages = messages.filter((msg) => msg.channelId === currentChannelId)
+  const currentChannel = channels.find(c => c.id === currentChannelId)
+  const filteredMessages = messages.filter(msg => msg.channelId === currentChannelId)
 
   const handleSubmit = async (values, { resetForm }) => {
     if (!currentChannelId) return

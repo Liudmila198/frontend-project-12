@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback } from 'react'
+import { createContext, useContext, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { login as loginThunk, register as registerThunk, logoutThunk } from '../slices/authSlice'
 
@@ -15,7 +15,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch()
   const { token, username, loading, loginError, registerError } = useSelector(
-    (state) => state.auth
+    state => state.auth
   )
 
   const login = useCallback(
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, error: result.payload }
     },
-    [dispatch]
+    [dispatch],
   )
 
   const register = useCallback(
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, error: result.payload }
     },
-    [dispatch]
+    [dispatch],
   )
 
   const logout = useCallback(() => {

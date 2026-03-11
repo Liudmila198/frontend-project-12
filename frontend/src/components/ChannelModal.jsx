@@ -33,9 +33,11 @@ const AddChannelForm = ({ onClose, validateChannelName }) => {
           await dispatch(createChannel(values.name)).unwrap()
           toast.success(t('toast.channelCreated'))
           onClose()
-        } catch {
+        }
+        catch {
           toast.error(t('toast.error'))
-        } finally {
+        }
+        finally {
           setSubmitting(false)
         }
       }}
