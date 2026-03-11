@@ -37,11 +37,11 @@ const App = () => {
               <Route path={ROUTES.SIGNUP} element={<SignupPage />} />
               <Route
                 path={ROUTES.HOME}
-                element={
+                element={(
                   <PrivateRoute>
                     <ChatPage />
                   </PrivateRoute>
-                }
+                )}
               />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

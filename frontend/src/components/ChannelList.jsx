@@ -7,12 +7,12 @@ import { show } from '../slices/modalSlice'
 const ChannelList = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { channels, currentChannelId } = useSelector(state => state.chat)
+  const { channels, currentChannelId } = useSelector((state) => state.chat)
 
-  const handleSelect = id => dispatch(setCurrentChannel(id))
+  const handleSelect = (id) => dispatch(setCurrentChannel(id))
   const handleAdd = () => dispatch(show({ type: 'add' }))
-  const handleRename = channel => dispatch(show({ type: 'rename', extra: channel }))
-  const handleRemove = channel => dispatch(show({ type: 'remove', extra: channel }))
+  const handleRename = (channel) => dispatch(show({ type: 'rename', extra: channel }))
+  const handleRemove = (channel) => dispatch(show({ type: 'remove', extra: channel }))
 
   return (
     <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
@@ -41,25 +41,13 @@ const ChannelList = () => {
         id="channels-box"
         className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
       >
-        {channels.map(channel => (
+        {channels.map((channel) => (
           <li key={channel.id} className="nav-item w-100">
-            {channel.removable === false ? 
-            (
-              <button
-                type="button"
-                className={`w-100 rounded-1 text-start btn ${
-                  currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'
-                }`}
-                onClick={() => handleSelect(channel.id)}
-              >
-                <span className="me-1">#</span>
-                {channel.name}
-              </button>
-            ) : (
-              <div className="d-flex dropdown btn-group">
+            {channel.removable === false
+              ? (
                 <button
                   type="button"
-                  className={`w-100 rounded-1 text-start text-truncate btn ${
+                  className={`w-100 rounded-1 text-start btn ${
                     currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'
                   }`}
                   onClick={() => handleSelect(channel.id)}
@@ -67,38 +55,51 @@ const ChannelList = () => {
                   <span className="me-1">#</span>
                   {channel.name}
                 </button>
-                <button
-                  type="button"
-                  className={`flex-grow-0 dropdown-toggle dropdown-toggle-split btn ${
-                    currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'
-                  }`}
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <span className="visually-hidden">{t('channel.actions')}</span>
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <button
-                      type="button"
-                      className="dropdown-item"
-                      onClick={() => handleRename(channel)}
-                    >
-                      {t('channel.rename')}
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      className="dropdown-item text-danger"
-                      onClick={() => handleRemove(channel)}
-                    >
-                      {t('channel.remove')}
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
+              )
+              : (
+                <div className="d-flex dropdown btn-group">
+                  <button
+                    type="button"
+                    className={`w-100 rounded-1 text-start text-truncate btn ${
+                      currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'
+                    }`}
+                    onClick={() => handleSelect(channel.id)}
+                  >
+                    <span className="me-1">#</span>
+                    {channel.name}
+                  </button>
+                  <button
+                    type="button"
+                    className={`flex-grow-0 dropdown-toggle dropdown-toggle-split btn ${
+                      currentChannelId === channel.id ? 'btn-secondary' : 'btn-light'
+                    }`}
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span className="visually-hidden">{t('channel.actions')}</span>
+                  </button>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button
+                        type="button"
+                        className="dropdown-item"
+                        onClick={() => handleRename(channel)}
+                      >
+                        {t('channel.rename')}
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="dropdown-item text-danger"
+                        onClick={() => handleRemove(channel)}
+                      >
+                        {t('channel.remove')}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
           </li>
         ))}
       </ul>
