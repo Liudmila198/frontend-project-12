@@ -1,5 +1,5 @@
 import axios from 'axios'
-import authStorage from '../services/authStorage'
+import { authStorage } from '../services/authStorage'
 
 const instance = axios.create({
   baseURL: '',
