@@ -1,7 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
-import ROUTES from '../constants/routes'
+import { ROUTES } from '../constants/routes'
 
 const Header = () => {
   const navigate = useNavigate()
