@@ -175,14 +175,14 @@ const TITLE_KEY = {
 const ChannelModal = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const { isOpened, type, extra } = useSelector((state) => state.modal)
-  const channels = useSelector((state) => state.chat.channels)
+  const { isOpened, type, extra } = useSelector(state => state.modal)
+  const channels = useSelector(state => state.chat.channels)
 
   const onClose = () => dispatch(hide())
 
   const validateChannelName = (name, currentId = null) =>
     !channels.find(
-      (c) => c.name === name && (currentId === null || c.id !== currentId),
+      c => c.name === name && (currentId === null || c.id !== currentId),
     )
 
   const bodyMap = {

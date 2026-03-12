@@ -7,8 +7,8 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     chat: chatReducer,
-    modal: modalReducer
+    modal: modalReducer,
   },
 })
 
-export default store  
+export default store

@@ -39,7 +39,8 @@ const MessageArea = () => {
           <p className="m-0">
             <b>
               #
-              {currentChannel?.name}</b>
+              {currentChannel?.name}
+            </b>
           </p>
           <span className="text-muted">
             {t('chat.messagesCount', { count: filteredMessages.length })}
@@ -48,7 +49,7 @@ const MessageArea = () => {
 
         {/* Messages */}
         <div id="messages-box" className="chat-messages overflow-auto px-5">
-          {filteredMessages.map((msg) => (
+          {filteredMessages.map(msg => (
             <div key={msg.id} className="text-break mb-2">
               <b>{msg.username}</b>
               {': '}

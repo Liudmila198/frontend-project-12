@@ -132,7 +132,8 @@ const SignupPage = () => {
               </div>
               <div className="card-footer p-4">
                 <div className="text-center">
-                  <span>{t('signup.alreadyHaveAccount')}</span>{' '}
+                  <span>{t('signup.alreadyHaveAccount')}</span>
+                  {' '}
                   <Link to={ROUTES.LOGIN}>{t('signup.loginLink')}</Link>
                 </div>
               </div>

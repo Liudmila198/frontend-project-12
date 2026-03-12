@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import socketManager from './index'
 import {
@@ -20,7 +20,7 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
   const dispatch = useDispatch()
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector(state => state.auth.token)
   const socketRef = useRef(null)
 
   useEffect(() => {
@@ -90,7 +90,8 @@ export const SocketProvider = ({ children }) => {
       socketRef.current.emit('newChannel', { name }, (response) => {
         if (response && response.status === 'ok') {
           resolve(response)
-        } else {
+        }
+        else {
           reject(response?.error || new Error('Failed to create channel'))
         }
       })
@@ -106,7 +107,8 @@ export const SocketProvider = ({ children }) => {
       socketRef.current.emit('renameChannel', { id, name }, (response) => {
         if (response && response.status === 'ok') {
           resolve(response)
-        } else {
+        }
+        else {
           reject(response?.error || new Error('Failed to rename channel'))
         }
       })
@@ -122,7 +124,8 @@ export const SocketProvider = ({ children }) => {
       socketRef.current.emit('removeChannel', { id }, (response) => {
         if (response && response.status === 'ok') {
           resolve(response)
-        } else {
+        }
+        else {
           reject(response?.error || new Error('Failed to remove channel'))
         }
       })

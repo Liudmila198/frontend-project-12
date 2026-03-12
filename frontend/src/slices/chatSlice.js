@@ -12,7 +12,8 @@ export const fetchInitialData = createAsyncThunk(
         api.get(API.MESSAGES),
       ])
       return { channels: channelsRes.data, messages: messagesRes.data }
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue({
         status: err.response?.status,
         data: err.response?.data,
@@ -31,7 +32,8 @@ export const sendMessage = createAsyncThunk(
         username,
       })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -44,7 +46,8 @@ export const createChannel = createAsyncThunk(
       const cleanName = filterProfanity(name)
       const response = await api.post(API.CHANNELS, { name: cleanName })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -57,7 +60,8 @@ export const renameChannel = createAsyncThunk(
       const cleanName = filterProfanity(name)
       const response = await api.patch(API.CHANNEL(id), { name: cleanName })
       return response.data
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -69,7 +73,8 @@ export const removeChannel = createAsyncThunk(
     try {
       await api.delete(API.CHANNEL(id))
       return id
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data)
     }
   },
@@ -91,13 +96,13 @@ const chatSlice = createSlice({
     },
     addMessage(state, action) {
       const message = action.payload
-      if (!state.messages.some((m) => m.id === message.id)) {
+      if (!state.messages.some(m => m.id === message.id)) {
         state.messages.push(message)
       }
     },
     addChannel(state, action) {
       const channel = action.payload
-      if (!state.channels.some((c) => c.id === channel.id)) {
+      if (!state.channels.some(c => c.id === channel.id)) {
         const filteredChannel = {
           ...channel,
           name: filterProfanity(channel.name),
@@ -107,14 +112,14 @@ const chatSlice = createSlice({
     },
     removeChannelAction(state, action) {
       const channelId = action.payload
-      state.channels = state.channels.filter((c) => c.id !== channelId)
+      state.channels = state.channels.filter(c => c.id !== channelId)
       if (state.currentChannelId === channelId) {
         state.currentChannelId = state.channels[0]?.id || null
       }
     },
     renameChannelAction(state, action) {
       const { id, name } = action.payload
-      const channel = state.channels.find((c) => c.id === id)
+      const channel = state.channels.find(c => c.id === id)
       if (channel) {
         channel.name = filterProfanity(name)
       }
@@ -128,7 +133,7 @@ const chatSlice = createSlice({
       })
       .addCase(fetchInitialData.fulfilled, (state, action) => {
         state.loading = false
-        state.channels = action.payload.channels.map((c) => ({
+        state.channels = action.payload.channels.map(c => ({
           ...c,
           name: filterProfanity(c.name),
         }))
@@ -147,7 +152,7 @@ const chatSlice = createSlice({
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.sending = false
         const message = action.payload
-        if (!state.messages.some((m) => m.id === message.id)) {
+        if (!state.messages.some(m => m.id === message.id)) {
           state.messages.push(message)
         }
       })
@@ -166,7 +171,7 @@ const chatSlice = createSlice({
       })
       .addCase(renameChannel.fulfilled, (state, action) => {
         const channel = action.payload
-        const index = state.channels.findIndex((c) => c.id === channel.id)
+        const index = state.channels.findIndex(c => c.id === channel.id)
         if (index !== -1) {
           state.channels[index] = {
             ...channel,
@@ -176,11 +181,11 @@ const chatSlice = createSlice({
       })
       .addCase(removeChannel.fulfilled, (state, action) => {
         const channelId = action.payload
-        state.channels = state.channels.filter((c) => c.id !== channelId)
+        state.channels = state.channels.filter(c => c.id !== channelId)
         if (state.currentChannelId === channelId) {
           state.currentChannelId = state.channels[0]?.id || null
         }
-        state.messages = state.messages.filter((m) => m.channelId !== channelId)
+        state.messages = state.messages.filter(m => m.channelId !== channelId)
       })
   },
 })

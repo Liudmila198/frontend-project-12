@@ -15,7 +15,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const dispatch = useDispatch()
   const { token, username, loading, loginError, registerError } = useSelector(
-    state => state.auth
+    state => state.auth,
   )
 
   const login = useCallback(
