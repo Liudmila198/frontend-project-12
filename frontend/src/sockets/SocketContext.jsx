@@ -74,7 +74,8 @@ export const SocketProvider = ({ children }) => {
             dispatch(addMessage(response.message))
           }
           resolve(response)
-        } else {
+        }
+        else {
           reject(response?.error || new Error('Failed to send message'))
         }
       })
