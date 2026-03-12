@@ -85,7 +85,7 @@ const RenameChannelForm = ({ channel, onClose, validateChannelName }) => {
           .min(3, t('validation.channelNameLength'))
           .max(20, t('validation.channelNameLength'))
           .required(t('validation.required'))
-          .test('unique', t('validation.channelNameUnique'), (value) =>
+          .test('unique', t('validation.channelNameUnique'), value =>
             validateChannelName(value, channel.id),
           ),
       })}
@@ -94,9 +94,11 @@ const RenameChannelForm = ({ channel, onClose, validateChannelName }) => {
           await dispatch(renameChannel({ id: channel.id, name: values.name })).unwrap()
           toast.success(t('toast.channelRenamed'))
           onClose()
-        } catch {
+        }
+        catch {
           toast.error(t('toast.error'))
-        } finally {
+        }
+        finally {
           setSubmitting(false)
         }
       }}
@@ -141,7 +143,8 @@ const RemoveChannelForm = ({ channel, onClose }) => {
       await dispatch(removeChannel(channel.id)).unwrap()
       toast.success(t('toast.channelRemoved'))
       onClose()
-    } catch {
+    }
+    catch {
       toast.error(t('toast.error'))
     }
   }

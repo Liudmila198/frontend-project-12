@@ -12,10 +12,11 @@ export const login = createAsyncThunk(
       authStorage.setToken(token)
       authStorage.setUsername(returnedUsername)
       return { token, username: returnedUsername }
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue(err.response?.data || 'Ошибка авторизации')
     }
-  }
+  },
 )
 
 export const register = createAsyncThunk(
@@ -27,13 +28,14 @@ export const register = createAsyncThunk(
       authStorage.setToken(token)
       authStorage.setUsername(returnedUsername)
       return { token, username: returnedUsername }
-    } catch (err) {
+    }
+    catch (err) {
       return rejectWithValue({
         status: err.response?.status,
         data: err.response?.data,
       })
     }
-  }
+  },
 )
 
 export const logoutThunk = createAsyncThunk('auth/logout', async (_, { dispatch }) => {

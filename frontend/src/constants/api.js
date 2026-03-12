@@ -3,5 +3,5 @@ export const API = {
   SIGNUP: '/api/v1/signup',
   CHANNELS: '/api/v1/channels',
   MESSAGES: '/api/v1/messages',
-  CHANNEL: (id) => `/api/v1/channels/${id}`,
+  CHANNEL: id => `/api/v1/channels/${id}`,
 }

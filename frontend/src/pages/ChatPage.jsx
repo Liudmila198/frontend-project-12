@@ -18,15 +18,16 @@ const ChatPage = () => {
   const { t } = useTranslation()
 
   const { channels, currentChannelId, loading, error } = useSelector(
-    (state) => state.chat,
+    state => state.chat,
   )
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector(state => state.auth.token)
 
   useEffect(() => {
     if (!token) return
     if (channels.length === 0) {
       dispatch(fetchInitialData())
-    } else if (!currentChannelId) {
+    }
+    else if (!currentChannelId) {
       dispatch(setCurrentChannel(channels[0].id))
     }
   }, [dispatch, token, channels.length, currentChannelId, channels])
@@ -35,7 +36,8 @@ const ChatPage = () => {
     if (error?.status === 401) {
       dispatch(logout())
       navigate(ROUTES.LOGIN)
-    } else if (error) {
+    }
+    else if (error) {
       toast.error(t('toast.loadingError'))
     }
   }, [error, dispatch, navigate, t])

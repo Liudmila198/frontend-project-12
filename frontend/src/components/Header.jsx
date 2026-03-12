@@ -12,8 +12,6 @@ const Header = () => {
     navigate('/login')
   }
 
-
-  
   return (
     <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
       <div className="container">

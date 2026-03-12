@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext'
 import Header from '../components/Header'
 import { ROUTES } from '../constants/routes'
 
-
 const LoginPage = () => {
   const { t } = useTranslation()
   const { login, isAuthenticated, loading, loginError, clearLoginError } = useAuth()
@@ -100,7 +99,8 @@ const LoginPage = () => {
               </div>
               <div className="card-footer p-4">
                 <div className="text-center">
-                  <span>{t('login.noAccount')}</span>{' '}
+                  <span>{t('login.noAccount')}</span>
+                  {' '}
                   <Link to={ROUTES.SIGNUP}>{t('login.signupLink')}</Link>
                 </div>
               </div>
