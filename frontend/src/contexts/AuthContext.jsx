@@ -44,12 +44,6 @@ export const AuthProvider = ({ children }) => {
     dispatch(logoutThunk())
   }, [dispatch])
 
-  const clearLoginError = useCallback(() => {
-    // можно добавить action, если нужен
-  }, [])
-
-  const clearRegisterError = useCallback(() => {}, [])
-
   const value = {
     isAuthenticated: !!token,
     token,
@@ -59,9 +53,7 @@ export const AuthProvider = ({ children }) => {
     registerError,
     login,
     register,
-    logout,
-    clearLoginError,
-    clearRegisterError,
+    logout
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

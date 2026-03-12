@@ -1,6 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
+import ROUTES from '../constants/routes'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -9,13 +10,13 @@ const Header = () => {
 
   const handleLogout = () => {
     logout()
-    navigate('/login')
+    navigate(ROUTES.LOGIN)
   }
 
   return (
     <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
       <div className="container">
-        <Link className="navbar-brand" to="/">
+        <Link className="navbar-brand" to={ROUTES.HOME}> {/* replaced '/' */}
           {t('header.brand')}
         </Link>
         {isAuthenticated && (

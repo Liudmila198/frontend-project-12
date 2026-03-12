@@ -17,8 +17,6 @@ const rollbar = new Rollbar({
   enabled: import.meta.env.PROD,
 })
 
-// Удалено присваивание window.rollbar
-
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)

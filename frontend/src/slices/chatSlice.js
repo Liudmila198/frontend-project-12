@@ -158,7 +158,7 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.sending = false
-        console.error('sendMessage rejected:', action.payload)
+        state.error = action.payload
       })
       .addCase(createChannel.fulfilled, (state, action) => {
         const channel = action.payload
