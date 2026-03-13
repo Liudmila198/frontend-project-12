@@ -20,7 +20,7 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
   const dispatch = useDispatch()
-  const token = useSelector(state => state.auth.token)
+  const token = useSelector((state) => state.auth.token)
   const socketRef = useRef(null)
 
   useEffect(() => {
@@ -68,14 +68,12 @@ export const SocketProvider = ({ children }) => {
         return
       }
       socketRef.current.emit('newMessage', data, (response) => {
-        if (response && response.status === 'ok') {
-          // Добавляем сообщение в Redux, если сервер не присылает событие newMessage
+        if (response?.status === 'ok') {
           if (response.message) {
             dispatch(addMessage(response.message))
           }
           resolve(response)
-        }
-        else {
+        } else {
           reject(response?.error || new Error('Failed to send message'))
         }
       })
@@ -89,10 +87,9 @@ export const SocketProvider = ({ children }) => {
         return
       }
       socketRef.current.emit('newChannel', { name }, (response) => {
-        if (response && response.status === 'ok') {
+        if (response?.status === 'ok') {
           resolve(response)
-        }
-        else {
+        } else {
           reject(response?.error || new Error('Failed to create channel'))
         }
       })
@@ -106,10 +103,9 @@ export const SocketProvider = ({ children }) => {
         return
       }
       socketRef.current.emit('renameChannel', { id, name }, (response) => {
-        if (response && response.status === 'ok') {
+        if (response?.status === 'ok') {
           resolve(response)
-        }
-        else {
+        } else {
           reject(response?.error || new Error('Failed to rename channel'))
         }
       })
@@ -123,10 +119,9 @@ export const SocketProvider = ({ children }) => {
         return
       }
       socketRef.current.emit('removeChannel', { id }, (response) => {
-        if (response && response.status === 'ok') {
+        if (response?.status === 'ok') {
           resolve(response)
-        }
-        else {
+        } else {
           reject(response?.error || new Error('Failed to remove channel'))
         }
       })

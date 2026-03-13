@@ -21,6 +21,3 @@ export const filterProfanity = (text) => {
  * @param {string} text - Проверяемый текст.
  * @returns {boolean} - true, если найдены нецензурные слова.
  */
-export const hasProfanity = (text) => {
-  return Filter.check(text)
-}
