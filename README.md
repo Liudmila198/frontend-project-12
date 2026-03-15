@@ -13,13 +13,13 @@
 https://frontend-project-12-kt7c.onrender.com   
 
 # Системные требования:
-# Node.js версии 20 и выше.
+### Node.js версии 20 и выше.
 
 ## Установка:
-'''git clone...
-'''cd frontend-project-12/
-'''make install
-'''make start
+'''git clone...'''
+'''cd frontend-project-12/'''
+'''make install'''
+'''make start'''
 
 ## Описание:
 Дипломный проект - строится на технологиях, используемых в повседневной работе фронтенд-разработчиками.
