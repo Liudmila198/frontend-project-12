@@ -17,7 +17,6 @@ const Header = () => {
     <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
       <div className="container">
         <Link className="navbar-brand" to={ROUTES.HOME}>
-          {/* replaced '/' */}
           {t('header.brand')}
         </Link>
         {isAuthenticated && (

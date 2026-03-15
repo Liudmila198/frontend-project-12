@@ -66,7 +66,6 @@ const resources = {
       'toast.messageError': 'Ошибка отправки сообщения',
       'toast.unknownError': 'Неизвестная ошибка',
 
-      // Новые ключи
       'notFound.title': '404 - Страница не найдена',
       'notFound.link': 'Вернуться на главную',
       'chat.messagesCount_one': '{{count}} сообщение',

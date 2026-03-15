@@ -1,12 +1,7 @@
 import Filter from 'leo-profanity'
 
-// Загружаем необходимые словари
 Filter.loadDictionary('ru')
 Filter.loadDictionary('en')
-
-// При необходимости можно добавить только уникальные слова, отсутствующие в словарях
-// Filter.add(['какое-то', 'специфичное', 'слово']);
-
 /**
  * Фильтрует нецензурные слова в тексте.
  * @param {string} text - Исходный текст.
@@ -15,7 +10,6 @@ Filter.loadDictionary('en')
 export const filterProfanity = (text) => {
   return Filter.clean(text)
 }
-
 /**
  * Проверяет наличие нецензурных слов в тексте.
  * @param {string} text - Проверяемый текст.
