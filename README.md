@@ -17,7 +17,7 @@ https://frontend-project-12-kt7c.onrender.com
 
 ## Установка:
 
-<pre>git clone...
+<pre>git
 git clone...
 cd frontend-project-12/
 make install
