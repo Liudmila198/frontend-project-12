@@ -16,11 +16,12 @@ https://frontend-project-12-kt7c.onrender.com
 ### Node.js версии 20 и выше.
 
 ## Установка:
-<pre>'''git clone...'''
-'''git clone...'''
-'''cd frontend-project-12/'''
-'''make install'''
-'''make start'''
+
+<pre>git clone...
+git clone...
+cd frontend-project-12/
+make install
+make start
 </pre>
 
 ## Описание:
